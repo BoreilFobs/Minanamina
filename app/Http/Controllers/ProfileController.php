@@ -2,59 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function show()
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = Auth::user();
+        return view('profile.show', compact('user'));
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function edit()
     {
-        $request->user()->fill($request->validated());
+        $user = Auth::user();
+        return view('profile.edit', compact('user'));
+    }
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'country' => 'nullable|string|max:2',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $data = $request->only(['name', 'country']);
+
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = $avatarPath;
         }
 
-        $request->user()->save();
+        $user->update($data);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return redirect()->route('profile.show')
+            ->with('success', 'Profil mis à jour avec succès!');
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function updateNotificationPreferences(Request $request)
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
+        $user = Auth::user();
 
-        $user = $request->user();
+        $preferences = [
+            'sms_notifications' => $request->boolean('sms_notifications'),
+            'campaign_updates' => $request->boolean('campaign_updates'),
+            'referral_updates' => $request->boolean('referral_updates'),
+            'payment_updates' => $request->boolean('payment_updates'),
+        ];
 
-        Auth::logout();
+        $user->update(['notification_preferences' => $preferences]);
 
-        $user->delete();
+        return back()->with('success', 'Préférences de notification mises à jour avec succès!');
+    }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    public function updatePrivacySettings(Request $request)
+    {
+        $user = Auth::user();
 
-        return Redirect::to('/');
+        $settings = [
+            'show_profile' => $request->boolean('show_profile'),
+            'show_earnings' => $request->boolean('show_earnings'),
+            'show_referrals' => $request->boolean('show_referrals'),
+        ];
+
+        $user->update(['privacy_settings' => $settings]);
+
+        return back()->with('success', 'Paramètres de confidentialité mis à jour avec succès!');
     }
 }
+

@@ -1,11 +1,2 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-        }),
-    ],
-});
+// Bootstrap configuration - Not using Vite
+// Assets are loaded directly from public/css and public/js folders

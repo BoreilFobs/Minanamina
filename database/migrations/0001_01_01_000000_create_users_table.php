@@ -14,15 +14,25 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('phone')->unique();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
+            $table->string('avatar')->nullable();
+            $table->text('bio')->nullable();
+            $table->enum('status', ['active', 'inactive', 'suspended', 'banned'])->default('active');
+            $table->decimal('pieces_balance', 15, 2)->default(0);
+            $table->json('privacy_settings')->nullable();
+            $table->json('notification_preferences')->nullable();
+            $table->string('referral_code')->unique();
+            $table->integer('total_referrals')->default(0);
+            $table->decimal('referral_earnings', 15, 2)->default(0);
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
+            $table->string('phone')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
