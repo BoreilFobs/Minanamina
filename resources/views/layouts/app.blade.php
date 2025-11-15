@@ -213,10 +213,21 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('campaigns.index') }}">
                                 <i class="bi bi-megaphone"></i> Campagnes
                             </a>
                         </li>
+                        @if(Auth::user()->isAdmin())
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-shield-check"></i> Admin
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ route('admin.campaigns.index') }}"><i class="bi bi-list"></i> Gestion Campagnes</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.campaigns.approvals.index') }}"><i class="bi bi-check-circle"></i> Approbations</a></li>
+                            </ul>
+                        </li>
+                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="#">
                                 <i class="bi bi-people"></i> Parrainages
