@@ -23,6 +23,7 @@ class User extends Authenticatable
         'country',
         'status',
         'is_admin',
+        'role',
         'pieces_balance',
         'consecutive_completions',
         'total_campaigns_completed',
@@ -62,6 +63,26 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->is_admin === true;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
+    public function isCampaignCreator(): bool
+    {
+        return $this->role === 'campaign_creator';
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
+    }
+
+    public function canManageCampaigns(): bool
+    {
+        return $this->isSuperAdmin() || $this->isCampaignCreator();
     }
 
     // Relations
@@ -193,6 +214,79 @@ class User extends Authenticatable
     public function isSuspicious(): bool
     {
         return $this->is_flagged_suspicious === true;
+    }
+
+    // Referral system methods
+    
+    /**
+     * Generate a unique referral code for the user
+     */
+    public function generateReferralCode(): string
+    {
+        do {
+            $code = strtoupper(substr($this->name, 0, 3) . rand(1000, 9999));
+        } while (User::where('referral_code', $code)->exists());
+
+        $this->update(['referral_code' => $code]);
+
+        return $code;
+    }
+
+    /**
+     * Get users referred by this user
+     */
+    public function referredUsers(): HasMany
+    {
+        return $this->hasMany(User::class, 'referred_by');
+    }
+
+    /**
+     * Get user who referred this user
+     */
+    public function referredBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    /**
+     * Get all referral records for this user as referrer
+     */
+    public function referralsMade(): HasMany
+    {
+        return $this->hasMany(Referral::class, 'referrer_id');
+    }
+
+    /**
+     * Get all referral records for this user as referred
+     */
+    public function referralReceived(): HasOne
+    {
+        return $this->hasOne(Referral::class, 'referred_id');
+    }
+
+    /**
+     * Add referral earnings to user
+     */
+    public function addReferralEarnings(int $amount): void
+    {
+        $this->increment('referral_earnings', $amount);
+        $this->increment('total_referrals');
+    }
+
+    /**
+     * Check if user has a referral code
+     */
+    public function hasReferralCode(): bool
+    {
+        return !empty($this->referral_code);
+    }
+
+    /**
+     * Check if user was referred by someone
+     */
+    public function wasReferred(): bool
+    {
+        return !empty($this->referred_by);
     }
 }
 

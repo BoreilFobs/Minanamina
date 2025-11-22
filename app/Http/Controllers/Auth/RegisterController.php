@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\PhoneVerificationCode;
-use App\Models\ReferralCode;
 use App\Models\User;
+use App\Services\ReferralService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -14,6 +14,12 @@ use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
+    protected $referralService;
+
+    public function __construct(ReferralService $referralService)
+    {
+        $this->referralService = $referralService;
+    }
     public function showRegistrationForm(Request $request)
     {
         $referralCode = $request->get('ref');
@@ -26,33 +32,38 @@ class RegisterController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20|unique:users|regex:/^\+?[0-9]{9,15}$/',
             'password' => 'required|string|min:8|confirmed',
-            'referral_code' => 'nullable|string|exists:referral_codes,code',
+            'referral_code' => 'nullable|string',
         ]);
+
+        // Validate referral code if provided
+        if ($request->referral_code && !$this->referralService->validateReferralCode($request->referral_code)) {
+            return back()->withErrors(['referral_code' => 'Code de parrainage invalide'])->withInput();
+        }
 
         // Create user with phone already verified
         $user = User::create([
             'name' => $request->name,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'referral_code' => $this->generateUniqueReferralCode(),
-            'phone_verified_at' => now(), // Auto-verify phone for now
+            'phone_verified_at' => now(),
             'status' => 'active',
             'pieces_balance' => 0,
+            'role' => 'user',
         ]);
 
-        // Create referral code for the user
-        ReferralCode::create([
-            'user_id' => $user->id,
-            'code' => $user->referral_code,
-            'is_active' => true,
-        ]);
+        // Generate referral code for new user
+        $user->generateReferralCode();
 
         // Handle referral if provided
         if ($request->referral_code) {
-            $this->handleReferral($user, $request->referral_code);
+            $result = $this->referralService->processReferral($user, $request->referral_code);
+            
+            if ($result['success']) {
+                session()->flash('referral_success', $result['message']);
+            }
         }
 
-        // Log in the user immediately (phone verification disabled for now)
+        // Log in the user immediately
         auth()->login($user);
 
         return redirect()->route('dashboard')
@@ -66,61 +77,6 @@ class RegisterController extends Controller
         } while (User::where('referral_code', $code)->exists());
 
         return $code;
-    }
-
-    protected function handleReferral($user, $referralCode)
-    {
-        $referralCodeRecord = ReferralCode::where('code', $referralCode)
-            ->where('is_active', true)
-            ->first();
-
-        if ($referralCodeRecord) {
-            $referrer = $referralCodeRecord->user;
-
-            // Create referral relationship
-            \App\Models\UserReferral::create([
-                'referrer_id' => $referrer->id,
-                'referral_user_id' => $user->id,
-                'status' => 'active',
-                'referral_level' => 1,
-                'commission_percentage' => 10,
-                'referred_at' => now(),
-                'activated_at' => now(),
-            ]);
-
-            // Update referrer stats
-            $referrer->increment('total_referrals');
-            $referralCodeRecord->increment('total_referrals');
-
-            // Award signup bonus to referrer (e.g., 50 pieces)
-            $signupBonus = 50;
-            $referrer->increment('pieces_balance', $signupBonus);
-            $referrer->increment('referral_earnings', $signupBonus);
-
-            \App\Models\UserPiecesTransaction::create([
-                'user_id' => $referrer->id,
-                'type' => 'referral_bonus',
-                'amount' => $signupBonus,
-                'balance_before' => $referrer->pieces_balance - $signupBonus,
-                'balance_after' => $referrer->pieces_balance,
-                'description' => "Bonus de parrainage pour {$user->name}",
-                'reference_id' => 'REF-' . Str::random(10),
-            ]);
-
-            // Award signup bonus to new user (e.g., 25 pieces)
-            $newUserBonus = 25;
-            $user->increment('pieces_balance', $newUserBonus);
-
-            \App\Models\UserPiecesTransaction::create([
-                'user_id' => $user->id,
-                'type' => 'referral_bonus',
-                'amount' => $newUserBonus,
-                'balance_before' => 0,
-                'balance_after' => $newUserBonus,
-                'description' => "Bonus de bienvenue pour l'inscription avec code de parrainage",
-                'reference_id' => 'WELCOME-' . Str::random(10),
-            ]);
-        }
     }
 
     public function sendPhoneVerification($phone)

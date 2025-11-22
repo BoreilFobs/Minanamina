@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('pieces_balance', 15, 2)->default(0);
             $table->json('privacy_settings')->nullable();
             $table->json('notification_preferences')->nullable();
-            $table->string('referral_code')->unique();
+            $table->string('referral_code')->unique()->nullable();
             $table->integer('total_referrals')->default(0);
             $table->decimal('referral_earnings', 15, 2)->default(0);
             $table->rememberToken();

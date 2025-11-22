@@ -31,8 +31,12 @@ class LoginController extends Controller
             // Phone verification check disabled for now
             // Will implement SMS verification later
             
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'Bienvenue, ' . Auth::user()->name . '!');
+            // Role-based redirect
+            $user = Auth::user();
+            $redirectRoute = $this->getRedirectRoute($user);
+            
+            return redirect()->intended($redirectRoute)
+                ->with('success', 'Bienvenue, ' . $user->name . '!');
         }
 
         return back()->withErrors([
@@ -47,5 +51,22 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Vous avez été déconnecté avec succès.');
+    }
+
+    /**
+     * Determine redirect route based on user role
+     */
+    protected function getRedirectRoute($user): string
+    {
+        if ($user->isSuperAdmin()) {
+            return route('dashboard'); // SuperAdmin dashboard
+        }
+        
+        if ($user->isCampaignCreator()) {
+            return route('admin.campaigns.index'); // Campaign management
+        }
+        
+        // Regular user
+        return route('dashboard'); // User dashboard
     }
 }

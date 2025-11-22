@@ -54,19 +54,37 @@
                                    id="password_confirmation" name="password_confirmation" required>
                         </div>
 
-                        <!-- Referral Code (Optional) -->
-                        @if(request('ref'))
-                            <div class="mb-3">
-                                <label for="referral_code" class="form-label">Code de parrainage</label>
-                                <input type="text" class="form-control" id="referral_code" 
-                                       name="referral_code" value="{{ request('ref') }}" readonly>
+                        <!-- Referral Code (Optional but Recommended) -->
+                        <div class="mb-3">
+                            <label for="referral_code" class="form-label">
+                                Code de parrainage 
+                                <span class="text-muted">(Optionnel)</span>
+                                <span class="badge bg-success">Bonus!</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control @error('referral_code') is-invalid @enderror" 
+                                   id="referral_code" 
+                                   name="referral_code" 
+                                   value="{{ old('referral_code', request('ref')) }}" 
+                                   placeholder="Entrez le code de parrainage"
+                                   {{ request('ref') ? 'readonly' : '' }}>
+                            @error('referral_code')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @if(request('ref'))
                                 <small class="text-success">
-                                    <i class="bi bi-gift"></i> Vous recevrez un bonus pour l'utilisation de ce code de parrainage!
+                                    <i class="bi bi-check-circle-fill"></i> 
+                                    Vous utilisez un code de parrainage! Vous recevrez un bonus à l'inscription.
                                 </small>
-                            </div>
-                        @endif
+                            @else
+                                <small class="text-muted">
+                                    <i class="bi bi-gift"></i> 
+                                    Entrez un code de parrainage pour recevoir un bonus de bienvenue
+                                </small>
+                            @endif
+                        </div>
 
-                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                        <button type="submit" class="btn btn-primary w-100 mb-3" onclick="return confirmNoReferral()">
                             <i class="bi bi-person-check"></i> S'inscrire
                         </button>
 
@@ -84,4 +102,34 @@
         </div>
     </div>
 </div>
+
+<script>
+function confirmNoReferral() {
+    const referralCode = document.getElementById('referral_code').value.trim();
+    
+    if (!referralCode) {
+        return confirm(
+            '⚠️ Vous n\'avez pas saisi de code de parrainage.\n\n' +
+            'En utilisant un code de parrainage, vous recevrez un bonus de bienvenue.\n\n' +
+            'Voulez-vous continuer sans code de parrainage ?'
+        );
+    }
+    
+    return true;
+}
+
+// Lock referral code field if it comes from URL
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refFromUrl = urlParams.get('ref');
+    const referralInput = document.getElementById('referral_code');
+    
+    if (refFromUrl && referralInput) {
+        referralInput.value = refFromUrl;
+        referralInput.readOnly = true;
+        referralInput.style.backgroundColor = '#e9ecef';
+        referralInput.style.cursor = 'not-allowed';
+    }
+});
+</script>
 @endsection

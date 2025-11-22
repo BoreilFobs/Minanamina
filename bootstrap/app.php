@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
+            'superadmin' => \App\Http\Middleware\IsSuperAdmin::class,
+            'campaign_creator' => \App\Http\Middleware\IsCampaignCreator::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

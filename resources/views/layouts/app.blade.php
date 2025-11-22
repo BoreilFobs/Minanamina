@@ -217,20 +217,33 @@
                                 <i class="bi bi-megaphone"></i> Campagnes
                             </a>
                         </li>
-                        @if(Auth::user()->isAdmin())
+                        @if(Auth::user()->canManageCampaigns())
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-shield-check"></i> Admin
+                                @if(Auth::user()->isSuperAdmin())
+                                <i class="bi bi-shield-fill-check"></i> Super Admin
+                                @else
+                                <i class="bi bi-shield-check"></i> Créateur
+                                @endif
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('admin.campaigns.index') }}"><i class="bi bi-list"></i> Gestion Campagnes</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.campaigns.index') }}"><i class="bi bi-megaphone"></i> Mes Campagnes</a></li>
+                                @if(Auth::user()->isSuperAdmin())
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Super Admin</h6></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.users.index') }}"><i class="bi bi-people"></i> Utilisateurs</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.users.campaign-creators') }}"><i class="bi bi-person-badge"></i> Créateurs</a></li>
                                 <li><a class="dropdown-item" href="{{ route('admin.campaigns.approvals.index') }}"><i class="bi bi-check-circle"></i> Approbations</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.validations.index') }}"><i class="bi bi-clipboard-check"></i> Validations</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.conversions.index') }}"><i class="bi bi-cash-coin"></i> Conversions</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.referrals.index') }}"><i class="bi bi-gift"></i> Parrainages</a></li>
+                                @endif
                             </ul>
                         </li>
                         @endif
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-people"></i> Parrainages
+                            <a class="nav-link" href="{{ route('referrals.index') }}">
+                                <i class="bi bi-gift"></i> Parrainages
                             </a>
                         </li>
                         <li class="nav-item dropdown">
