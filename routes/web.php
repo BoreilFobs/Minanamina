@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\PiecesManagementController;
 use App\Http\Controllers\Admin\ConversionManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\ReferralSettingsController;
+use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 // Home
@@ -134,6 +135,13 @@ Route::middleware(['auth', 'superadmin'])->prefix('admin')->name('admin.')->grou
     Route::post('/conversions/{conversion}/completed', [ConversionManagementController::class, 'markCompleted'])->name('conversions.completed');
     Route::post('/conversions/{conversion}/notes', [ConversionManagementController::class, 'addNotes'])->name('conversions.notes');
     Route::get('/conversions/export', [ConversionManagementController::class, 'export'])->name('conversions.export');
+    
+    // Settings Management (SuperAdmin only)
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/update-all', [SettingsController::class, 'updateAll'])->name('settings.update-all');
+    Route::post('/settings/conversion-rate', [SettingsController::class, 'updateConversionRate'])->name('settings.conversion-rate');
+    Route::post('/settings/minimum-pieces', [SettingsController::class, 'updateMinimumPieces'])->name('settings.minimum-pieces');
+    Route::post('/settings/toggle-conversion', [SettingsController::class, 'toggleConversion'])->name('settings.toggle-conversion');
 });
 
 // Campaign Creator & SuperAdmin Routes

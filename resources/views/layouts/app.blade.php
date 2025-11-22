@@ -237,6 +237,8 @@
                                 <li><a class="dropdown-item" href="{{ route('admin.validations.index') }}"><i class="bi bi-clipboard-check"></i> Validations</a></li>
                                 <li><a class="dropdown-item" href="{{ route('admin.conversions.index') }}"><i class="bi bi-cash-coin"></i> Conversions</a></li>
                                 <li><a class="dropdown-item" href="{{ route('admin.referrals.index') }}"><i class="bi bi-gift"></i> Parrainages</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.settings.index') }}"><i class="bi bi-gear-fill"></i> Paramètres</a></li>
                                 @endif
                             </ul>
                         </li>
@@ -307,17 +309,17 @@
             <i class="bi bi-house-door-fill"></i>
             <span>Accueil</span>
         </a>
-        <a href="#" class="nav-link">
+        <a href="{{ route('campaigns.index') }}" class="nav-link {{ request()->routeIs('campaigns.*') && !request()->routeIs('campaigns.my-participations') ? 'active' : '' }}">
             <i class="bi bi-megaphone-fill"></i>
             <span>Campagnes</span>
         </a>
-        <a href="#" class="nav-link">
+        <a href="{{ route('referrals.index') }}" class="nav-link {{ request()->routeIs('referrals.*') ? 'active' : '' }}">
             <i class="bi bi-people-fill"></i>
             <span>Parrainages</span>
         </a>
-        <a href="#" class="nav-link">
+        <a href="{{ route('rewards.index') }}" class="nav-link {{ request()->routeIs('rewards.*') ? 'active' : '' }}">
             <i class="bi bi-wallet2"></i>
-            <span>Paiements</span>
+            <span>Récompenses</span>
         </a>
         <a href="{{ route('profile.show') }}" class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
             <i class="bi bi-person-circle"></i>

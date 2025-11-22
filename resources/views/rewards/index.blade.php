@@ -72,7 +72,7 @@
     <!-- Action Buttons -->
     <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <a href="{{ route('rewards.convert') }}" class="btn btn-primary w-100 py-3">
+            <a href="{{ route('rewards.convert.form') }}" class="btn btn-primary w-100 py-3">
                 <i class="bi bi-cash-coin"></i> Convertir en Cash
             </a>
         </div>
@@ -138,7 +138,7 @@
         <div class="card-header text-white" style="background-color: #0d6efd;">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historique des Transactions</h5>
-                <a href="{{ route('rewards.export-transactions') }}" class="btn btn-sm btn-light">
+                <a href="{{ route('rewards.transactions.export') }}" class="btn btn-sm btn-light">
                     <i class="bi bi-download"></i> Exporter CSV
                 </a>
             </div>
@@ -162,18 +162,20 @@
                             <td>
                                 @php
                                     $typeLabels = [
-                                        'campaign_completion' => 'Campagne',
+                                        'earned' => 'Campagne',
                                         'referral_bonus' => 'Parrainage',
+                                        'welcome_bonus' => 'Bienvenue',
                                         'manual_adjustment' => 'Ajustement',
                                         'converted' => 'Conversion',
-                                        'refund' => 'Remboursement',
+                                        'reversal' => 'Annulation',
                                     ];
                                     $typeColors = [
-                                        'campaign_completion' => 'success',
+                                        'earned' => 'success',
                                         'referral_bonus' => 'info',
+                                        'welcome_bonus' => 'primary',
                                         'manual_adjustment' => 'warning',
                                         'converted' => 'danger',
-                                        'refund' => 'primary',
+                                        'reversal' => 'secondary',
                                     ];
                                 @endphp
                                 <span class="badge bg-{{ $typeColors[$transaction->type] ?? 'secondary' }}">

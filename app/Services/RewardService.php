@@ -275,9 +275,7 @@ class RewardService
      */
     public function getConversionRate(): float
     {
-        // This would typically be configurable in settings
-        // For now, return a default rate: 1000 pieces = 1 USD (or local currency)
-        return config('reward.conversion_rate', 0.001);
+        return \App\Models\Setting::getConversionRate();
     }
 
     /**
@@ -293,7 +291,7 @@ class RewardService
      */
     public function getMinimumConversionAmount(): float
     {
-        return config('reward.minimum_conversion', 10000); // 10,000 pieces minimum
+        return \App\Models\Setting::getMinimumConversionPieces();
     }
 
     /**
@@ -301,6 +299,14 @@ class RewardService
      */
     public function canConvert(User $user, float $pieces): array
     {
+        // Check if conversion system is enabled
+        if (!\App\Models\Setting::isConversionEnabled()) {
+            return [
+                'can_convert' => false,
+                'reason' => 'Le système de conversion est temporairement désactivé',
+            ];
+        }
+
         $minimum = $this->getMinimumConversionAmount();
 
         if ($pieces < $minimum) {
