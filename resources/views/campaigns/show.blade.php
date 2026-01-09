@@ -1,204 +1,373 @@
-@extends('layouts.app')
+@extends('layouts.modern')
+
+@section('title', $campaign->title)
 
 @section('content')
-<div class="container py-4">
-    <!-- Header -->
-    <div class="mb-4">
-        <a href="{{ route('campaigns.index') }}" class="btn btn-secondary mb-3">
-            <i class="bi bi-arrow-left"></i> Retour aux Campagnes
-        </a>
+<!-- Back Header -->
+<div class="back-header mb-3">
+    <a href="{{ route('campaigns.index') }}" class="back-btn">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h5 class="mb-0 fw-bold">Détails</h5>
+    <div style="width: 40px;"></div>
+</div>
+
+<!-- Campaign Hero -->
+<div class="campaign-hero mb-4">
+    @if($campaign->image)
+        <img src="{{ asset('storage/' . $campaign->image) }}" alt="{{ $campaign->title }}" class="hero-image">
+    @else
+        <div class="hero-placeholder">
+            <i class="bi bi-megaphone"></i>
+        </div>
+    @endif
+    <div class="hero-overlay">
+        <span class="reward-badge-lg">
+            <i class="bi bi-gem"></i> {{ number_format($campaign->pieces_reward) }} pièces
+        </span>
+    </div>
+</div>
+
+<!-- Campaign Info -->
+<div class="campaign-detail-card mb-4">
+    <h4 class="fw-bold mb-2">{{ $campaign->title }}</h4>
+    
+    <div class="status-badges mb-3">
+        <span class="badge bg-success">
+            <i class="bi bi-check-circle"></i> Active
+        </span>
+        @php
+            $daysLeft = \Carbon\Carbon::parse($campaign->end_date)->diffInDays(now());
+        @endphp
+        @if($daysLeft <= 3)
+        <span class="badge bg-danger">
+            <i class="bi bi-clock"></i> {{ $daysLeft }}j restants
+        </span>
+        @else
+        <span class="badge bg-secondary">
+            <i class="bi bi-clock"></i> {{ $daysLeft }}j restants
+        </span>
+        @endif
     </div>
 
-    <div class="row">
-        <!-- Left Column: Campaign Details -->
-        <div class="col-lg-8">
-            <!-- Campaign Image and Info -->
-            <div class="card mb-4" style="border: 2px solid #0d6efd;">
-                @if($campaign->image)
-                <img src="{{ asset('storage/' . $campaign->image) }}" 
-                     class="card-img-top" 
-                     alt="{{ $campaign->title }}"
-                     style="max-height: 400px; object-fit: cover;">
-                @endif
-                
-                <div class="card-body">
-                    <h1 class="h3" style="font-weight: 600;">{{ $campaign->title }}</h1>
-                    
-                    <div class="mb-4">
-                        <span class="badge bg-success me-2">
-                            <i class="bi bi-check-circle"></i> Active
-                        </span>
-                        <span class="badge" style="background-color: #ffc107; color: #000; font-size: 1.2rem;">
-                            <i class="bi bi-coin"></i> {{ number_format($campaign->pieces_reward) }} pièces
-                        </span>
-                    </div>
+    <p class="campaign-description">{{ $campaign->description }}</p>
+</div>
 
-                    <h5 style="font-weight: 600;"><i class="bi bi-file-text"></i> Description</h5>
-                    <p style="white-space: pre-wrap; font-size: 1.05rem;">{{ $campaign->description }}</p>
+<!-- How to Participate -->
+@if($campaign->validation_rules)
+<div class="info-card mb-4">
+    <div class="info-card-header">
+        <i class="bi bi-list-check text-primary"></i>
+        <h6 class="mb-0 fw-bold">Comment Participer</h6>
+    </div>
+    <div class="info-card-body">
+        <p class="mb-0">{{ $campaign->validation_rules }}</p>
+    </div>
+</div>
+@endif
 
-                    @if($campaign->validation_rules)
-                    <hr>
-                    <h5 style="font-weight: 600;"><i class="bi bi-check-square"></i> Comment Participer</h5>
-                    <div class="alert alert-info">
-                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ $campaign->validation_rules }}</p>
-                    </div>
-                    @endif
-
-                    <hr>
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <strong style="font-weight: 600;"><i class="bi bi-calendar-event"></i> Date de Début</strong><br>
-                            {{ \Carbon\Carbon::parse($campaign->start_date)->format('d/m/Y') }}
-                        </div>
-                        <div class="col-md-6">
-                            <strong style="font-weight: 600;"><i class="bi bi-calendar-x"></i> Date de Fin</strong><br>
-                            {{ \Carbon\Carbon::parse($campaign->end_date)->format('d/m/Y') }}
-                            @php
-                                $daysLeft = \Carbon\Carbon::parse($campaign->end_date)->diffInDays(now());
-                            @endphp
-                            <br><small class="text-{{ $daysLeft <= 3 ? 'danger' : 'muted' }}">
-                                <i class="bi bi-hourglass-split"></i> Plus que {{ $daysLeft }} jour(s)
-                            </small>
-                        </div>
-                        <div class="col-md-12">
-                            <strong style="font-weight: 600;"><i class="bi bi-people"></i> Participants</strong><br>
-                            {{ number_format($stats['total_participants']) }} participant(s)
-                            ({{ number_format($stats['completed_participations']) }} complété(s))
-                        </div>
-                    </div>
-
-                    @if($campaign->geographic_restrictions)
-                    <hr>
-                    <h6 style="font-weight: 600;"><i class="bi bi-geo-alt"></i> Disponible dans</h6>
-                    <p>
-                        @php
-                            $restrictions = is_array($campaign->geographic_restrictions) 
-                                ? $campaign->geographic_restrictions
-                                : json_decode($campaign->geographic_restrictions, true) ?? [];
-                        @endphp
-                        @if(empty($restrictions))
-                            Tous les pays
-                        @else
-                            {{ implode(', ', $restrictions) }}
-                        @endif
-                    </p>
-                    @endif
-                </div>
-            </div>
+<!-- Stats Row -->
+<div class="stats-row mb-4">
+    <div class="stat-item">
+        <i class="bi bi-calendar-event text-primary"></i>
+        <div class="stat-text">
+            <small class="text-muted">Début</small>
+            <strong>{{ \Carbon\Carbon::parse($campaign->start_date)->format('d/m/Y') }}</strong>
         </div>
-
-        <!-- Right Column: Participation Panel -->
-        <div class="col-lg-4">
-            @if($userParticipation)
-            <!-- User Already Participated -->
-            <div class="card mb-3" style="border: 2px solid #ffc107;">
-                <div class="card-header text-dark" style="background-color: #ffc107;">
-                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Votre Participation</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Statut:</strong></p>
-                    @if($userParticipation->status == 'pending')
-                        <span class="badge bg-warning text-dark fs-6">
-                            <i class="bi bi-clock-history"></i> En Attente de Validation
-                        </span>
-                        <div class="alert alert-info mt-3">
-                            <small>
-                                <i class="bi bi-info-circle"></i> 
-                                Votre participation est en cours de vérification. 
-                                Vous serez notifié une fois validée.
-                            </small>
-                        </div>
-                    @elseif($userParticipation->status == 'completed')
-                        <span class="badge bg-success fs-6">
-                            <i class="bi bi-check-circle"></i> Complétée
-                        </span>
-                        <div class="alert alert-success mt-3">
-                            <strong><i class="bi bi-coin"></i> {{ number_format($userParticipation->pieces_earned) }} pièces gagnées!</strong><br>
-                            <small>Le {{ $userParticipation->completed_at->format('d/m/Y à H:i') }}</small>
-                        </div>
-                    @elseif($userParticipation->status == 'rejected')
-                        <span class="badge bg-danger fs-6">
-                            <i class="bi bi-x-circle"></i> Rejetée
-                        </span>
-                        <div class="alert alert-danger mt-3">
-                            <small>
-                                <i class="bi bi-exclamation-triangle"></i> 
-                                Votre participation n'a pas été validée.
-                            </small>
-                        </div>
-                    @endif
-
-                    <hr>
-
-                    <p class="mb-0">
-                        <small class="text-muted">
-                            Participé le {{ $userParticipation->started_at->format('d/m/Y à H:i') }}
-                        </small>
-                    </p>
-                </div>
-            </div>
-            @else
-            <!-- Participation Button -->
-            <div class="card mb-3" style="border: 2px solid #198754;">
-                <div class="card-header text-white" style="background-color: #198754;">
-                    <h5 class="mb-0"><i class="bi bi-rocket"></i> Participer Maintenant</h5>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <div class="display-6" style="color: #ffc107;">
-                            <i class="bi bi-coin"></i>
-                        </div>
-                        <h3 style="font-weight: 600; color: #198754;">
-                            {{ number_format($campaign->pieces_reward) }} pièces
-                        </h3>
-                        <p class="text-muted">à gagner!</p>
-                    </div>
-
-                    @auth
-                    <form action="{{ route('campaigns.participate', $campaign) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-success btn-lg w-100">
-                            <i class="bi bi-rocket-takeoff"></i> Participer Maintenant
-                        </button>
-                    </form>
-                    <small class="text-muted d-block mt-2 text-center">
-                        <i class="bi bi-info-circle"></i> Vous serez redirigé vers le site partenaire
-                    </small>
-                    @else
-                    <a href="{{ route('login') }}" class="btn btn-primary btn-lg w-100">
-                        <i class="bi bi-box-arrow-in-right"></i> Connectez-vous pour Participer
-                    </a>
-                    @endauth
-                </div>
-            </div>
-            @endif
-
-            <!-- Campaign Stats -->
-            <div class="card" style="border: 2px solid #0d6efd;">
-                <div class="card-header text-white" style="background-color: #0d6efd;">
-                    <h6 class="mb-0"><i class="bi bi-graph-up"></i> Statistiques</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span style="font-weight: 600;">Participants Total</span>
-                        <span class="badge bg-primary">{{ number_format($stats['total_participants']) }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span style="font-weight: 600;">Validations</span>
-                        <span class="badge bg-success">{{ number_format($stats['completed_participations']) }}</span>
-                    </div>
-                    @if($stats['total_participants'] > 0)
-                    <div class="d-flex justify-content-between">
-                        <span style="font-weight: 600;">Taux de Réussite</span>
-                        <span class="badge bg-info">
-                            {{ round(($stats['completed_participations'] / $stats['total_participants']) * 100, 1) }}%
-                        </span>
-                    </div>
-                    @endif
-                </div>
-            </div>
+    </div>
+    <div class="stat-item">
+        <i class="bi bi-calendar-x text-danger"></i>
+        <div class="stat-text">
+            <small class="text-muted">Fin</small>
+            <strong>{{ \Carbon\Carbon::parse($campaign->end_date)->format('d/m/Y') }}</strong>
+        </div>
+    </div>
+    <div class="stat-item">
+        <i class="bi bi-people text-info"></i>
+        <div class="stat-text">
+            <small class="text-muted">Participants</small>
+            <strong>{{ number_format($stats['total_participants']) }}</strong>
         </div>
     </div>
 </div>
+
+<!-- User Participation Status -->
+@if($userParticipation)
+<div class="participation-status mb-4">
+    @if($userParticipation->status == 'pending')
+    <div class="status-card warning">
+        <div class="status-icon">
+            <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div class="status-info">
+            <h6 class="fw-bold mb-1">En attente de validation</h6>
+            <p class="mb-0 small text-muted">Votre participation est en cours de vérification</p>
+        </div>
+    </div>
+    @elseif($userParticipation->status == 'completed')
+    <div class="status-card success">
+        <div class="status-icon">
+            <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="status-info">
+            <h6 class="fw-bold mb-1">Participation validée!</h6>
+            <p class="mb-0 small">
+                <span class="text-success fw-bold">+{{ number_format($userParticipation->pieces_earned) }} pièces</span>
+                <br>
+                <span class="text-muted">Le {{ $userParticipation->completed_at->format('d/m/Y à H:i') }}</span>
+            </p>
+        </div>
+    </div>
+    @elseif($userParticipation->status == 'rejected')
+    <div class="status-card danger">
+        <div class="status-icon">
+            <i class="bi bi-x-circle"></i>
+        </div>
+        <div class="status-info">
+            <h6 class="fw-bold mb-1">Participation rejetée</h6>
+            <p class="mb-0 small text-muted">Votre participation n'a pas été validée</p>
+        </div>
+    </div>
+    @endif
+</div>
+@endif
+
+<!-- Action Button -->
+<div class="action-button-wrapper">
+    @if(!$userParticipation)
+        @auth
+        <form action="{{ route('campaigns.participate', $campaign) }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-primary btn-lg w-100 participate-btn">
+                <i class="bi bi-rocket-takeoff me-2"></i>Participer Maintenant
+            </button>
+        </form>
+        <p class="text-center text-muted small mt-2">
+            <i class="bi bi-info-circle"></i> Vous serez redirigé vers le site partenaire
+        </p>
+        @else
+        <a href="{{ route('login') }}" class="btn btn-primary btn-lg w-100">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Connectez-vous pour Participer
+        </a>
+        @endauth
+    @endif
+</div>
 @endsection
+
+@push('styles')
+<style>
+/* Back Header */
+.back-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Campaign Hero */
+.campaign-hero {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    margin: 0 -1rem;
+}
+
+.hero-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.hero-placeholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: white;
+}
+
+.hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+}
+
+.reward-badge-lg {
+    background: var(--warning);
+    color: #000;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* Campaign Detail Card */
+.campaign-detail-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.status-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.campaign-description {
+    color: var(--muted);
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* Info Card */
+.info-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.info-card-header {
+    padding: 1rem 1.25rem;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-card-body {
+    padding: 1.25rem;
+}
+
+/* Stats Row */
+.stats-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.stat-item {
+    flex: 1;
+    min-width: 100px;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.stat-item i {
+    font-size: 1.5rem;
+}
+
+.stat-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-text small {
+    font-size: 0.7rem;
+}
+
+.stat-text strong {
+    font-size: 0.9rem;
+}
+
+/* Participation Status */
+.status-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+}
+
+.status-card.warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+}
+
+.status-card.success {
+    background: linear-gradient(135deg, #d1e7dd 0%, #a3cfbb 100%);
+}
+
+.status-card.danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
+}
+
+.status-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.status-card.warning .status-icon {
+    color: var(--warning);
+}
+
+.status-card.success .status-icon {
+    color: var(--success);
+}
+
+.status-card.danger .status-icon {
+    color: var(--danger);
+}
+
+/* Action Button */
+.action-button-wrapper {
+    position: sticky;
+    bottom: 80px;
+    padding: 1rem 0;
+    background: linear-gradient(transparent, var(--light) 30%);
+}
+
+.participate-btn {
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 14px;
+}
+
+@media (min-width: 768px) {
+    .campaign-hero {
+        margin: 0;
+    }
+    
+    .hero-image,
+    .hero-placeholder {
+        height: 300px;
+    }
+    
+    .action-button-wrapper {
+        position: static;
+        background: none;
+    }
+}
+</style>
+@endpush

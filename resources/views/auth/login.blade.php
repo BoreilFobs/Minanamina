@@ -1,65 +1,112 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('title', 'Connexion - Minanamina')
 
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5 col-lg-4">
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <h3 class="card-title text-center mb-4">
-                        <i class="bi bi-box-arrow-in-right text-primary"></i> Connexion
-                    </h3>
-
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-
-                        <!-- Phone -->
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Numéro de téléphone</label>
-                            <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
-                                   id="phone" name="phone" value="{{ old('phone') }}" 
-                                   placeholder="+237 6 XX XX XX XX" required autofocus>
-                            @error('phone')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Mot de passe</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" name="password" required>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Remember Me -->
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">Se souvenir de moi</label>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 mb-3">
-                            <i class="bi bi-box-arrow-in-right"></i> Se connecter
-                        </button>
-
-                        <div class="text-center">
-                            <a href="{{ route('password.request') }}" class="text-muted small">Mot de passe oublié?</a>
-                        </div>
-
-                        <hr>
-
-                        <p class="text-center text-muted small mb-0">
-                            Pas encore de compte? 
-                            <a href="{{ route('register') }}" class="text-primary">Inscrivez-vous ici</a>
-                        </p>
-                    </form>
-                </div>
+<div class="auth-card animate-slide-up">
+    <h1 class="auth-title">Bon retour !</h1>
+    <p class="auth-subtitle">Connectez-vous pour accéder à votre compte</p>
+    
+    @if(session('error'))
+    <div class="alert alert--danger mb-lg">
+        <i class="bi bi-exclamation-circle alert__icon"></i>
+        <div class="alert__content">{{ session('error') }}</div>
+    </div>
+    @endif
+    
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
+        
+        <div class="form-group">
+            <label for="phone" class="form-label form-label--required">Numéro de téléphone</label>
+            <input type="tel" 
+                   id="phone" 
+                   name="phone" 
+                   class="form-input form-select {{ $errors->has('phone') ? 'form-input--error' : '' }}"
+                   value="{{ old('phone') }}"
+                   placeholder="Ex: 0701234567"
+                   autocomplete="tel"
+                   required
+                   autofocus>
+            @error('phone')
+            <div class="form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ $message }}
             </div>
+            @enderror
         </div>
+        
+        <div class="form-group">
+            <div class="flex justify-between items-center mb-sm">
+                <label for="password" class="form-label form-label--required m-0">Mot de passe</label>
+                <a href="{{ route('password.request') }}" class="text-sm" style="color: var(--primary);">Oublié ?</a>
+            </div>
+            <div style="position: relative;">
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       class="form-input {{ $errors->has('password') ? 'form-input--error' : '' }}"
+                       placeholder="••••••••"
+                       autocomplete="current-password"
+                       required>
+                <button type="button" 
+                        onclick="togglePassword('password')" 
+                        class="btn btn--ghost btn--icon"
+                        style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%);">
+                    <i class="bi bi-eye" id="password-toggle-icon"></i>
+                </button>
+            </div>
+            @error('password')
+            <div class="form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ $message }}
+            </div>
+            @enderror
+        </div>
+        
+        <div class="form-check mb-lg">
+            <input type="checkbox" 
+                   id="remember" 
+                   name="remember" 
+                   class="form-check-input"
+                   {{ old('remember') ? 'checked' : '' }}>
+            <label for="remember" class="form-check-label">Se souvenir de moi</label>
+        </div>
+        
+        <button type="submit" class="btn btn--primary btn--lg btn--block">
+            <i class="bi bi-box-arrow-in-right"></i>
+            Se connecter
+        </button>
+    </form>
+    
+    <div class="auth-divider">ou</div>
+    
+    <div class="text-center">
+        <p class="text-muted mb-md">Pas encore de compte ?</p>
+        <a href="{{ route('register') }}" class="btn btn--outline btn--block">
+            Créer un compte
+        </a>
     </div>
 </div>
+
+<div class="auth-footer">
+    En vous connectant, vous acceptez nos <a href="#">Conditions</a> et notre <a href="#">Politique de confidentialité</a>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(inputId + '-toggle-icon');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+</script>
+@endpush

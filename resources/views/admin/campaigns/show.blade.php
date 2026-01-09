@@ -1,12 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Détails Campagne')
+@section('page-title', 'Détails Campagne')
 
 @section('content')
-<div class="container py-4">
-    <!-- Header with Actions -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">{{ $campaign->title }}</h1>
+<div class="admin-page">
+    <div class="admin-page__header d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="admin-page__title">{{ $campaign->title }}</h1>
+            <p class="admin-page__subtitle">Détails et statistiques de la campagne</p>
+        </div>
         <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ route('admin.campaigns.index') }}" class="btn btn-secondary">
+            <a href="{{ route('admin.campaigns.index') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Retour
             </a>
             <a href="{{ route('admin.campaigns.analytics.show', $campaign) }}" class="btn btn-info">

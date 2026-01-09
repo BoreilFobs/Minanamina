@@ -1,203 +1,274 @@
-@extends('layouts.app')
+@extends('layouts.modern')
 
-@section('title', 'Mes Conversions - Minanamina')
+@section('title', 'Mes Conversions')
 
 @section('content')
-<div class="container py-4">
-    <!-- Header -->
-    <div class="mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h3 mb-0">Mes Conversions</h1>
-                <p class="text-muted mb-0">Suivez l'état de vos demandes de conversion</p>
-            </div>
-            <div>
-                <a href="{{ route('rewards.convert.form') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Nouvelle Conversion
-                </a>
-                <a href="{{ route('rewards.index') }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Retour
-                </a>
-            </div>
-        </div>
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1 fw-bold">Mes Conversions</h4>
+        <p class="text-muted mb-0 small">Historique de vos demandes</p>
     </div>
+    <a href="{{ route('rewards.convert.form') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus"></i> Nouvelle
+    </a>
+</div>
 
-    <!-- Stats Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-primary" style="border-width: 2px;">
-                <div class="card-body text-center">
-                    <div class="text-primary mb-2">
-                        <i class="bi bi-list-check" style="font-size: 2rem;"></i>
-                    </div>
-                    <h3 class="mb-0" style="font-weight: 700;">{{ $stats['total_requests'] }}</h3>
-                    <small class="text-muted">Total Demandes</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-warning" style="border-width: 2px;">
-                <div class="card-body text-center">
-                    <div class="text-warning mb-2">
-                        <i class="bi bi-clock" style="font-size: 2rem;"></i>
-                    </div>
-                    <h3 class="mb-0" style="font-weight: 700;">{{ $stats['pending_requests'] }}</h3>
-                    <small class="text-muted">En Attente</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-success" style="border-width: 2px;">
-                <div class="card-body text-center">
-                    <div class="text-success mb-2">
-                        <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
-                    </div>
-                    <h3 class="mb-0" style="font-weight: 700;">{{ $stats['completed_requests'] }}</h3>
-                    <small class="text-muted">Complétées</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-info" style="border-width: 2px;">
-                <div class="card-body text-center">
-                    <div class="text-info mb-2">
-                        <i class="bi bi-cash-stack" style="font-size: 2rem;"></i>
-                    </div>
-                    <h3 class="mb-0" style="font-weight: 700;">{{ number_format($stats['total_converted_cash'], 0) }}</h3>
-                    <small class="text-muted">CFA Convertis</small>
-                </div>
-            </div>
-        </div>
+<!-- Stats -->
+<div class="conversion-stats mb-4">
+    <div class="c-stat">
+        <div class="c-stat-value">{{ $stats['total_requests'] ?? 0 }}</div>
+        <div class="c-stat-label">Total</div>
     </div>
-
-    <!-- Conversions List -->
-    <div class="card" style="border: 2px solid #0d6efd;">
-        <div class="card-header text-white" style="background-color: #0d6efd;">
-            <h5 class="mb-0"><i class="bi bi-list-ul"></i> Historique des Conversions</h5>
-        </div>
-        <div class="card-body">
-            @forelse($conversions as $conversion)
-            <div class="card mb-3 {{ $conversion->status === 'rejected' ? 'border-danger' : ($conversion->status === 'completed' ? 'border-success' : 'border-warning') }}" style="border-width: 2px;">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <!-- Status Badge -->
-                        <div class="col-md-2 text-center">
-                            @php
-                                $statusConfig = [
-                                    'pending' => ['icon' => 'clock', 'color' => 'warning', 'label' => 'En Attente'],
-                                    'processing' => ['icon' => 'arrow-repeat', 'color' => 'info', 'label' => 'En Traitement'],
-                                    'completed' => ['icon' => 'check-circle', 'color' => 'success', 'label' => 'Complété'],
-                                    'rejected' => ['icon' => 'x-circle', 'color' => 'danger', 'label' => 'Rejeté'],
-                                ];
-                                $config = $statusConfig[$conversion->status] ?? ['icon' => 'question', 'color' => 'secondary', 'label' => $conversion->status];
-                            @endphp
-                            <div class="text-{{ $config['color'] }} mb-2">
-                                <i class="bi bi-{{ $config['icon'] }}" style="font-size: 3rem;"></i>
-                            </div>
-                            <span class="badge bg-{{ $config['color'] }}">{{ $config['label'] }}</span>
-                        </div>
-
-                        <!-- Conversion Details -->
-                        <div class="col-md-6">
-                            <h5 class="mb-1">
-                                <i class="bi bi-coin text-primary"></i> {{ number_format($conversion->pieces_amount) }} pièces
-                                <i class="bi bi-arrow-right mx-2"></i>
-                                <i class="bi bi-cash text-success"></i> {{ number_format($conversion->cash_amount, 0) }} CFA
-                            </h5>
-                            <p class="text-muted mb-1">
-                                <i class="bi bi-calendar"></i> {{ $conversion->created_at->format('d/m/Y à H:i') }}
-                            </p>
-                            <p class="mb-0">
-                                @php
-                                    $methodLabels = [
-                                        'orange_money' => 'Orange Money',
-                                        'mtn_mobile_money' => 'MTN Mobile Money',
-                                        'wave' => 'Wave',
-                                        'bank_transfer' => 'Virement Bancaire',
-                                        'paypal' => 'PayPal',
-                                    ];
-                                @endphp
-                                <span class="badge bg-secondary">
-                                    <i class="bi bi-wallet2"></i> {{ $methodLabels[$conversion->payment_method] ?? $conversion->payment_method }}
-                                </span>
-                                @if($conversion->payment_phone)
-                                    <small class="text-muted ms-2">{{ $conversion->payment_phone }}</small>
-                                @endif
-                                @if($conversion->payment_email)
-                                    <small class="text-muted ms-2">{{ $conversion->payment_email }}</small>
-                                @endif
-                            </p>
-                        </div>
-
-                        <!-- Timeline -->
-                        <div class="col-md-3">
-                            <small class="text-muted d-block">
-                                <i class="bi bi-clock-history"></i> Créée: {{ $conversion->created_at->diffForHumans() }}
-                            </small>
-                            @if($conversion->processed_at)
-                            <small class="text-muted d-block">
-                                <i class="bi bi-gear"></i> Traitée: {{ $conversion->processed_at->diffForHumans() }}
-                            </small>
-                            @endif
-                            @if($conversion->completed_at)
-                            <small class="text-success d-block">
-                                <i class="bi bi-check2"></i> Complétée: {{ $conversion->completed_at->diffForHumans() }}
-                            </small>
-                            @endif
-                            @if($conversion->rejected_at)
-                            <small class="text-danger d-block">
-                                <i class="bi bi-x"></i> Rejetée: {{ $conversion->rejected_at->diffForHumans() }}
-                            </small>
-                            @endif
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="col-md-1 text-center">
-                            <a href="{{ route('rewards.conversions.show', $conversion) }}" 
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Rejection Reason -->
-                    @if($conversion->status === 'rejected' && $conversion->rejection_reason)
-                    <div class="alert alert-danger mb-0 mt-3">
-                        <strong><i class="bi bi-exclamation-triangle"></i> Raison du rejet:</strong>
-                        {{ $conversion->rejection_reason }}
-                    </div>
-                    @endif
-
-                    <!-- Admin Notes -->
-                    @if($conversion->admin_notes)
-                    <div class="alert alert-info mb-0 mt-3">
-                        <strong><i class="bi bi-chat-left-text"></i> Notes:</strong>
-                        {{ $conversion->admin_notes }}
-                    </div>
-                    @endif
-                </div>
-            </div>
-            @empty
-            <div class="text-center py-5">
-                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
-                <h5 class="text-muted mt-3">Aucune conversion pour le moment</h5>
-                <p class="text-muted">Commencez par convertir vos pièces en cash</p>
-                <a href="{{ route('rewards.convert.form') }}" class="btn btn-primary mt-2">
-                    <i class="bi bi-plus-circle"></i> Faire une Conversion
-                </a>
-            </div>
-            @endforelse
-
-            <!-- Pagination -->
-            @if($conversions->hasPages())
-            <div class="mt-4">
-                {{ $conversions->links() }}
-            </div>
-            @endif
-        </div>
+    <div class="c-stat warning">
+        <div class="c-stat-value">{{ $stats['pending_requests'] ?? 0 }}</div>
+        <div class="c-stat-label">En attente</div>
+    </div>
+    <div class="c-stat success">
+        <div class="c-stat-value">{{ $stats['completed_requests'] ?? 0 }}</div>
+        <div class="c-stat-label">Complétées</div>
+    </div>
+    <div class="c-stat info">
+        <div class="c-stat-value">{{ number_format($stats['total_converted_cash'] ?? 0, 0) }}</div>
+        <div class="c-stat-label">FCFA</div>
     </div>
 </div>
+
+<!-- Filter -->
+<div class="filter-chips mb-4">
+    <a href="{{ route('rewards.conversions') }}" class="filter-chip {{ !request('status') ? 'active' : '' }}">
+        Toutes
+    </a>
+    <a href="{{ route('rewards.conversions', ['status' => 'pending']) }}" class="filter-chip {{ request('status') == 'pending' ? 'active' : '' }}">
+        En attente
+    </a>
+    <a href="{{ route('rewards.conversions', ['status' => 'completed']) }}" class="filter-chip {{ request('status') == 'completed' ? 'active' : '' }}">
+        Complétées
+    </a>
+    <a href="{{ route('rewards.conversions', ['status' => 'rejected']) }}" class="filter-chip {{ request('status') == 'rejected' ? 'active' : '' }}">
+        Rejetées
+    </a>
+</div>
+
+<!-- Conversions List -->
+<div class="conversions-list">
+    @forelse($conversions as $conversion)
+    <a href="{{ route('rewards.conversions.show', $conversion) }}" class="conversion-card {{ $conversion->status }}">
+        <div class="conversion-status-icon">
+            @if($conversion->status == 'pending')
+                <i class="bi bi-clock"></i>
+            @elseif($conversion->status == 'processing')
+                <i class="bi bi-arrow-repeat"></i>
+            @elseif($conversion->status == 'completed')
+                <i class="bi bi-check-circle"></i>
+            @else
+                <i class="bi bi-x-circle"></i>
+            @endif
+        </div>
+        <div class="conversion-info">
+            <div class="conversion-amounts">
+                <span class="pieces">{{ number_format($conversion->pieces_amount) }} pièces</span>
+                <i class="bi bi-arrow-right"></i>
+                <span class="cash">{{ number_format($conversion->cash_amount, 0) }} FCFA</span>
+            </div>
+            <div class="conversion-meta">
+                @php
+                    $methodLabels = [
+                        'orange_money' => 'Orange Money',
+                        'mtn_mobile_money' => 'MTN MoMo',
+                        'wave' => 'Wave',
+                    ];
+                @endphp
+                <span class="method">{{ $methodLabels[$conversion->payment_method] ?? $conversion->payment_method }}</span>
+                <span class="date">{{ $conversion->created_at->format('d/m/Y') }}</span>
+            </div>
+        </div>
+        <div class="conversion-status">
+            @if($conversion->status == 'pending')
+                <span class="badge-status pending">En attente</span>
+            @elseif($conversion->status == 'processing')
+                <span class="badge-status processing">Traitement</span>
+            @elseif($conversion->status == 'completed')
+                <span class="badge-status completed">Complétée</span>
+            @else
+                <span class="badge-status rejected">Rejetée</span>
+            @endif
+        </div>
+    </a>
+    @empty
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="bi bi-inbox"></i>
+        </div>
+        <h5>Aucune conversion</h5>
+        <p class="text-muted">Convertissez vos pièces en cash!</p>
+        <a href="{{ route('rewards.convert.form') }}" class="btn btn-primary">
+            <i class="bi bi-arrow-repeat me-1"></i> Convertir
+        </a>
+    </div>
+    @endforelse
+</div>
+
+<!-- Pagination -->
+@if($conversions->hasPages())
+<div class="pagination-wrapper mt-4">
+    {{ $conversions->links() }}
+</div>
+@endif
 @endsection
+
+@push('styles')
+<style>
+/* Stats */
+.conversion-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.c-stat {
+    background: white;
+    border-radius: 12px;
+    padding: 0.75rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.c-stat.warning { background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%); }
+.c-stat.success { background: linear-gradient(135deg, #d1e7dd 0%, #a3cfbb 100%); }
+.c-stat.info { background: linear-gradient(135deg, #cff4fc 0%, #9eeaf9 100%); }
+
+.c-stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.c-stat-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+}
+
+/* Filter Chips */
+.filter-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.filter-chips::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+    flex-shrink: 0;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    background: white;
+    color: var(--dark);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid #e9ecef;
+}
+
+.filter-chip.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Conversion Card */
+.conversions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.conversion-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 16px;
+    padding: 1rem;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid;
+}
+
+.conversion-card.pending { border-left-color: var(--warning); }
+.conversion-card.processing { border-left-color: var(--info); }
+.conversion-card.completed { border-left-color: var(--success); }
+.conversion-card.rejected { border-left-color: var(--danger); }
+
+.conversion-status-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+.conversion-card.pending .conversion-status-icon { background: #fff3cd; color: #856404; }
+.conversion-card.processing .conversion-status-icon { background: #cff4fc; color: #055160; }
+.conversion-card.completed .conversion-status-icon { background: #d1e7dd; color: #0f5132; }
+.conversion-card.rejected .conversion-status-icon { background: #f8d7da; color: #842029; }
+
+.conversion-info {
+    flex: 1;
+}
+
+.conversion-amounts {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.conversion-amounts .pieces { color: var(--primary); }
+.conversion-amounts .cash { color: var(--success); }
+.conversion-amounts i { color: var(--muted); font-size: 0.8rem; }
+
+.conversion-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.badge-status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-status.pending { background: #fff3cd; color: #856404; }
+.badge-status.processing { background: #cff4fc; color: #055160; }
+.badge-status.completed { background: #d1e7dd; color: #0f5132; }
+.badge-status.rejected { background: #f8d7da; color: #842029; }
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: var(--muted);
+}
+</style>
+@endpush

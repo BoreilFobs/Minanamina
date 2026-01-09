@@ -1,12 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Créateurs de Campagnes')
+@section('page-title', 'Créateurs')
 
 @section('content')
-<div class="container py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="admin-page">
+    <div class="admin-page__header d-flex justify-content-between align-items-start mb-4">
         <div>
-            <h1 class="h3 mb-0">Créateurs de Campagnes</h1>
-            <p class="text-muted mb-0">Utilisateurs autorisés à gérer les campagnes</p>
+            <h1 class="admin-page__title">Créateurs de Campagnes</h1>
+            <p class="admin-page__subtitle">Utilisateurs autorisés à gérer les campagnes</p>
         </div>
         <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Tous les utilisateurs

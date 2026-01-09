@@ -1,109 +1,161 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('title', 'Inscription - Minanamina')
 
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
-            <div class="card shadow border-0">
-                <div class="card-body p-4 p-md-5">
-                    <h3 class="card-title text-center mb-4">
-                        <i class="bi bi-person-plus-fill text-primary"></i> Créer un compte
-                    </h3>
+<div class="auth-card animate-slide-up">
+    <h1 class="auth-title">Créer un compte</h1>
+    <p class="auth-subtitle">Rejoignez Minanamina et commencez à gagner</p>
+    
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
 
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
-
-                        <!-- Name -->
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nom complet</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" name="name" value="{{ old('name') }}" required autofocus>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Phone -->
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Numéro de téléphone</label>
-                            <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
-                                   id="phone" name="phone" value="{{ old('phone') }}" placeholder="+221771234567" required>
-                            <small class="text-muted">Format: +[indicatif pays][numéro]</small>
-                            @error('phone')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Mot de passe</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" name="password" required>
-                            <small class="text-muted">Minimum 8 caractères</small>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="mb-3">
-                            <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
-                            <input type="password" class="form-control" 
-                                   id="password_confirmation" name="password_confirmation" required>
-                        </div>
-
-                        <!-- Referral Code (Optional but Recommended) -->
-                        <div class="mb-3">
-                            <label for="referral_code" class="form-label">
-                                Code de parrainage 
-                                <span class="text-muted">(Optionnel)</span>
-                                <span class="badge bg-success">Bonus!</span>
-                            </label>
-                            <input type="text" 
-                                   class="form-control @error('referral_code') is-invalid @enderror" 
-                                   id="referral_code" 
-                                   name="referral_code" 
-                                   value="{{ old('referral_code', request('ref')) }}" 
-                                   placeholder="Entrez le code de parrainage"
-                                   {{ request('ref') ? 'readonly' : '' }}>
-                            @error('referral_code')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            @if(request('ref'))
-                                <small class="text-success">
-                                    <i class="bi bi-check-circle-fill"></i> 
-                                    Vous utilisez un code de parrainage! Vous recevrez un bonus à l'inscription.
-                                </small>
-                            @else
-                                <small class="text-muted">
-                                    <i class="bi bi-gift"></i> 
-                                    Entrez un code de parrainage pour recevoir un bonus de bienvenue
-                                </small>
-                            @endif
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 mb-3" onclick="return confirmNoReferral()">
-                            <i class="bi bi-person-check"></i> S'inscrire
-                        </button>
-
-                        <p class="text-center text-muted small mb-0">
-                            Vous avez déjà un compte? 
-                            <a href="{{ route('login') }}" class="text-primary">Connexion</a>
-                        </p>
-                    </form>
-
-                    <div class="alert alert-info mt-3 mb-0">
-                        <small><i class="bi bi-info-circle"></i> Un code de vérification SMS sera envoyé après l'inscription</small>
-                    </div>
-                </div>
+        <div class="form-group">
+            <label for="name" class="form-label form-label--required">Nom complet</label>
+            <input type="text" 
+                   id="name" 
+                   name="name" 
+                   class="form-input {{ $errors->has('name') ? 'form-input--error' : '' }}"
+                   value="{{ old('name') }}"
+                   placeholder="Jean Dupont"
+                   autocomplete="name"
+                   required 
+                   autofocus>
+            @error('name')
+            <div class="form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ $message }}
             </div>
+            @enderror
         </div>
+
+        <div class="form-group">
+            <label for="phone" class="form-label form-label--required">Numéro de téléphone</label>
+            <input type="tel" 
+                   id="phone" 
+                   name="phone" 
+                   class="form-input {{ $errors->has('phone') ? 'form-input--error' : '' }}"
+                   value="{{ old('phone') }}"
+                   placeholder="Ex: 0701234567"
+                   autocomplete="tel"
+                   required>
+            <div class="form-hint">Ce numéro sera utilisé pour vous connecter</div>
+            @error('phone')
+            <div class="form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ $message }}
+            </div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="password" class="form-label form-label--required">Mot de passe</label>
+            <div style="position: relative;">
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       class="form-input {{ $errors->has('password') ? 'form-input--error' : '' }}"
+                       placeholder="Minimum 8 caractères"
+                       autocomplete="new-password"
+                       required>
+                <button type="button" 
+                        onclick="togglePassword('password')" 
+                        class="btn btn--ghost btn--icon"
+                        style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%);">
+                    <i class="bi bi-eye" id="password-toggle-icon"></i>
+                </button>
+            </div>
+            @error('password')
+            <div class="form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ $message }}
+            </div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="password_confirmation" class="form-label form-label--required">Confirmer le mot de passe</label>
+            <input type="password" 
+                   id="password_confirmation" 
+                   name="password_confirmation" 
+                   class="form-input"
+                   placeholder="Répétez le mot de passe"
+                   autocomplete="new-password"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="referral_code" class="form-label">
+                Code de parrainage
+                <span class="badge badge--success" style="margin-left: 4px;">Bonus!</span>
+            </label>
+            <input type="text" 
+                   id="referral_code" 
+                   name="referral_code" 
+                   class="form-input {{ $errors->has('referral_code') ? 'form-input--error' : '' }}"
+                   value="{{ old('referral_code', request('ref')) }}"
+                   placeholder="Entrez un code si vous en avez un"
+                   {{ request('ref') ? 'readonly style=background:var(--gray-100);cursor:not-allowed;' : '' }}>
+            @if(request('ref'))
+            <div class="form-hint" style="color: var(--success);">
+                <i class="bi bi-check-circle"></i> Vous recevrez un bonus de bienvenue !
+            </div>
+            @else
+            <div class="form-hint">
+                <i class="bi bi-gift"></i> Bonus de bienvenue avec un code valide
+            </div>
+            @endif
+            @error('referral_code')
+            <div class="form-error">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ $message }}
+            </div>
+            @enderror
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--lg btn--block" onclick="return confirmNoReferral()">
+            <i class="bi bi-person-plus"></i>
+            Créer mon compte
+        </button>
+    </form>
+    
+    <div class="alert alert--info mt-lg">
+        <i class="bi bi-shield-check alert__icon"></i>
+        <div class="alert__content text-sm">
+            Un code de vérification SMS sera envoyé pour confirmer votre numéro
+        </div>
+    </div>
+    
+    <div class="auth-divider">ou</div>
+    
+    <div class="text-center">
+        <p class="text-muted mb-md">Déjà inscrit ?</p>
+        <a href="{{ route('login') }}" class="btn btn--outline btn--block">
+            Se connecter
+        </a>
     </div>
 </div>
 
+<div class="auth-footer">
+    En créant un compte, vous acceptez nos <a href="#">Conditions</a> et notre <a href="#">Politique de confidentialité</a>
+</div>
+@endsection
+
+@push('scripts')
 <script>
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(inputId + '-toggle-icon');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+
 function confirmNoReferral() {
     const referralCode = document.getElementById('referral_code').value.trim();
     
@@ -117,19 +169,5 @@ function confirmNoReferral() {
     
     return true;
 }
-
-// Lock referral code field if it comes from URL
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const refFromUrl = urlParams.get('ref');
-    const referralInput = document.getElementById('referral_code');
-    
-    if (refFromUrl && referralInput) {
-        referralInput.value = refFromUrl;
-        referralInput.readOnly = true;
-        referralInput.style.backgroundColor = '#e9ecef';
-        referralInput.style.cursor = 'not-allowed';
-    }
-});
 </script>
-@endsection
+@endpush

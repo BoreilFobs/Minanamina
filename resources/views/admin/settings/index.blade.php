@@ -1,59 +1,354 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('title', 'Paramètres du Système - Admin')
+@section('title', 'Paramètres du Système')
+@section('page-title', 'Paramètres')
+
+@push('styles')
+<style>
+    .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    @media (min-width: 1024px) {
+        .settings-grid {
+            grid-template-columns: 2fr 1fr;
+        }
+    }
+    
+    .settings-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .settings-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #5a4fcf 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .settings-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .settings-body {
+        padding: 1.5rem;
+    }
+    
+    .setting-group {
+        margin-bottom: 2rem;
+    }
+    
+    .setting-group:last-child {
+        margin-bottom: 0;
+    }
+    
+    .setting-label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .setting-label i {
+        color: var(--primary-color);
+    }
+    
+    .setting-description {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+    
+    .input-group-modern {
+        display: flex;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s;
+    }
+    
+    .input-group-modern:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(107, 79, 187, 0.1);
+    }
+    
+    .input-group-modern .input-prefix,
+    .input-group-modern .input-suffix {
+        background: #f9fafb;
+        padding: 0.875rem 1rem;
+        color: #6b7280;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+    
+    .input-group-modern input {
+        flex: 1;
+        border: none;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        min-width: 0;
+    }
+    
+    .input-group-modern input:focus {
+        outline: none;
+    }
+    
+    .preview-box {
+        background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .preview-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #1e40af;
+        margin-bottom: 0.75rem;
+    }
+    
+    .preview-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        padding: 0.35rem 0;
+        color: #1e3a8a;
+    }
+    
+    .preview-item strong {
+        font-weight: 600;
+    }
+    
+    .toggle-section {
+        background: #f9fafb;
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .toggle-info {
+        flex: 1;
+    }
+    
+    .toggle-label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+    }
+    
+    .toggle-description {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+    
+    .form-switch .form-check-input {
+        width: 56px;
+        height: 30px;
+        cursor: pointer;
+    }
+    
+    .form-switch .form-check-input:checked {
+        background-color: #10b981;
+        border-color: #10b981;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #5a4fcf 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        font-size: 1rem;
+    }
+    
+    .divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 1.5rem 0;
+    }
+    
+    /* Info Sidebar */
+    .info-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-header {
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .info-header.green {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .info-header.yellow {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .info-header h6 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .info-body {
+        padding: 1.25rem;
+    }
+    
+    .current-stat {
+        text-align: center;
+        padding: 1rem;
+        background: #f9fafb;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+    
+    .current-stat:last-child {
+        margin-bottom: 0;
+    }
+    
+    .current-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    .current-stat-label {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .status-badge.active {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+    
+    .status-badge.inactive {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+    
+    .notes-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .notes-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.85rem;
+        color: #4b5563;
+    }
+    
+    .notes-list li:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .notes-list strong {
+        color: #1f2937;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    
+    .alert-success {
+        background: #d1fae5;
+        border: none;
+        color: #065f46;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+    
+    .alert-danger {
+        background: #fee2e2;
+        border: none;
+        color: #991b1b;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+</style>
+@endpush
 
 @section('content')
-<div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="mb-4">
-        <h1 class="h3 mb-0">
-            <i class="bi bi-gear-fill"></i> Paramètres du Système
-        </h1>
-        <p class="text-muted mb-0">Configurer les paramètres globaux de l'application</p>
+<div class="admin-page">
+    <div class="admin-page__header">
+        <h1 class="admin-page__title">Paramètres du Système</h1>
+        <p class="admin-page__subtitle">Configurer les paramètres globaux de l'application</p>
     </div>
 
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-success mb-4">
+        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
     </div>
     @endif
 
     @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle"></i> 
-        <strong>Erreur:</strong>
-        <ul class="mb-0">
-            @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-danger mb-4">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        @foreach($errors->all() as $error)
+            {{ $error }}<br>
+        @endforeach
     </div>
     @endif
 
-    <div class="row">
-        <!-- Main Settings Form -->
-        <div class="col-lg-8">
-            <div class="card mb-4" style="border: 2px solid #0d6efd;">
-                <div class="card-header text-white" style="background-color: #0d6efd;">
-                    <h5 class="mb-0"><i class="bi bi-cash-coin"></i> Paramètres de Conversion</h5>
+    <div class="settings-grid">
+        <!-- Main Settings -->
+        <div>
+            <div class="settings-card">
+                <div class="settings-header">
+                    <i class="bi bi-cash-coin"></i>
+                    <h5>Paramètres de Conversion</h5>
                 </div>
-                <div class="card-body">
+                <div class="settings-body">
                     <form action="{{ route('admin.settings.update-all') }}" method="POST">
                         @csrf
-                        
+
                         <!-- Conversion Rate -->
-                        <div class="mb-4">
-                            <label for="conversion_rate" class="form-label">
-                                <i class="bi bi-currency-exchange"></i> 
-                                <strong>Taux de Conversion</strong>
-                                <span class="text-danger">*</span>
+                        <div class="setting-group">
+                            <label class="setting-label">
+                                <i class="bi bi-currency-exchange"></i>
+                                Taux de Conversion
                             </label>
-                            <div class="input-group">
-                                <span class="input-group-text">1 pièce =</span>
+                            <p class="setting-description">
+                                Valeur d'une pièce en FCFA. Ce taux sera utilisé pour tous les calculs de conversion.
+                            </p>
+                            <div class="input-group-modern">
+                                <span class="input-prefix">1 pièce =</span>
                                 <input type="number" 
-                                       class="form-control @error('conversion_rate') is-invalid @enderror" 
                                        id="conversion_rate" 
                                        name="conversion_rate" 
                                        step="0.0001" 
@@ -62,39 +357,43 @@
                                        value="{{ old('conversion_rate', Setting::get('conversion_rate', 0.001)) }}"
                                        required
                                        oninput="updatePreview()">
-                                <span class="input-group-text">FCFA</span>
-                                @error('conversion_rate')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <span class="input-suffix">FCFA</span>
                             </div>
-                            <small class="text-muted d-block mt-1">
-                                Valeur actuelle appliquée dans toute l'application
-                            </small>
                             
-                            <!-- Preview Calculation -->
-                            <div class="alert alert-info mt-3">
-                                <strong>Aperçu:</strong>
-                                <div id="preview-calculations">
-                                    <div>10,000 pièces = <strong id="preview-10k">10</strong> FCFA</div>
-                                    <div>50,000 pièces = <strong id="preview-50k">50</strong> FCFA</div>
-                                    <div>100,000 pièces = <strong id="preview-100k">100</strong> FCFA</div>
-                                    <div>1,000,000 pièces = <strong id="preview-1m">1,000</strong> FCFA</div>
+                            <div class="preview-box">
+                                <div class="preview-title">📊 Aperçu des conversions</div>
+                                <div class="preview-item">
+                                    <span>10,000 pièces</span>
+                                    <strong id="preview-10k">10</strong> FCFA
+                                </div>
+                                <div class="preview-item">
+                                    <span>50,000 pièces</span>
+                                    <strong id="preview-50k">50</strong> FCFA
+                                </div>
+                                <div class="preview-item">
+                                    <span>100,000 pièces</span>
+                                    <strong id="preview-100k">100</strong> FCFA
+                                </div>
+                                <div class="preview-item">
+                                    <span>1,000,000 pièces</span>
+                                    <strong id="preview-1m">1,000</strong> FCFA
                                 </div>
                             </div>
                         </div>
 
-                        <hr>
+                        <div class="divider"></div>
 
-                        <!-- Minimum Conversion Pieces -->
-                        <div class="mb-4">
-                            <label for="minimum_conversion_pieces" class="form-label">
+                        <!-- Minimum Pieces -->
+                        <div class="setting-group">
+                            <label class="setting-label">
                                 <i class="bi bi-hash"></i>
-                                <strong>Minimum de Pièces pour Conversion</strong>
-                                <span class="text-danger">*</span>
+                                Minimum de Pièces
                             </label>
-                            <div class="input-group">
+                            <p class="setting-description">
+                                Nombre minimum de pièces nécessaires pour effectuer une conversion.
+                            </p>
+                            <div class="input-group-modern">
                                 <input type="number" 
-                                       class="form-control @error('minimum_conversion_pieces') is-invalid @enderror" 
                                        id="minimum_conversion_pieces" 
                                        name="minimum_conversion_pieces" 
                                        step="100" 
@@ -103,110 +402,100 @@
                                        value="{{ old('minimum_conversion_pieces', Setting::get('minimum_conversion_pieces', 10000)) }}"
                                        required
                                        oninput="updateMinPreview()">
-                                <span class="input-group-text">pièces</span>
-                                @error('minimum_conversion_pieces')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <span class="input-suffix">pièces</span>
                             </div>
-                            <small class="text-muted d-block mt-1">
-                                Nombre minimum de pièces qu'un utilisateur doit avoir pour effectuer une conversion
-                            </small>
-                            <div class="alert alert-secondary mt-2">
-                                <strong>Valeur minimale en FCFA:</strong> <span id="min-fcfa-preview">10</span> FCFA
+                            <div class="preview-box">
+                                <div class="preview-item">
+                                    <span>Valeur minimale en FCFA:</span>
+                                    <strong id="min-fcfa-preview">10</strong> FCFA
+                                </div>
                             </div>
                         </div>
 
-                        <hr>
+                        <div class="divider"></div>
 
-                        <!-- Conversion System Toggle -->
-                        <div class="mb-4">
-                            <label class="form-label">
-                                <i class="bi bi-toggle-on"></i>
-                                <strong>État du Système de Conversion</strong>
-                            </label>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" 
-                                       type="checkbox" 
-                                       role="switch" 
-                                       id="conversion_enabled" 
-                                       name="conversion_enabled"
-                                       value="1"
-                                       {{ Setting::get('conversion_enabled', true) ? 'checked' : '' }}
-                                       style="width: 3em; height: 1.5em;">
-                                <label class="form-check-label" for="conversion_enabled">
-                                    <span id="conversion-status-text">
-                                        {{ Setting::get('conversion_enabled', true) ? 'Activé' : 'Désactivé' }}
-                                    </span>
-                                </label>
+                        <!-- System Toggle -->
+                        <div class="setting-group">
+                            <div class="toggle-section">
+                                <div class="toggle-info">
+                                    <div class="toggle-label">Système de Conversion</div>
+                                    <div class="toggle-description">
+                                        Activer ou désactiver les demandes de conversion
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="conversion_enabled" 
+                                           name="conversion_enabled"
+                                           value="1"
+                                           {{ Setting::get('conversion_enabled', true) ? 'checked' : '' }}>
+                                </div>
                             </div>
-                            <small class="text-muted d-block mt-1">
-                                Si désactivé, les utilisateurs ne pourront pas soumettre de nouvelles demandes de conversion
-                            </small>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-save"></i> Enregistrer Tous les Paramètres
-                            </button>
-                        </div>
+                        <button type="submit" class="btn-save mt-4">
+                            <i class="bi bi-save"></i> Enregistrer les modifications
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Information Sidebar -->
-        <div class="col-lg-4">
-            <!-- Current Stats Card -->
-            <div class="card mb-4" style="border: 2px solid #28a745;">
-                <div class="card-header text-white" style="background-color: #28a745;">
-                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations</h5>
+        <!-- Sidebar -->
+        <div>
+            <!-- Current Values -->
+            <div class="info-card">
+                <div class="info-header green">
+                    <i class="bi bi-info-circle"></i>
+                    <h6>Valeurs Actuelles</h6>
                 </div>
-                <div class="card-body">
-                    <h6 class="text-muted mb-3">Taux de Conversion Actuel</h6>
-                    <div class="text-center mb-4 p-3 bg-light rounded">
-                        <div class="display-6 text-success">{{ number_format(Setting::get('conversion_rate', 0.001), 4) }}</div>
-                        <small class="text-muted">FCFA par pièce</small>
+                <div class="info-body">
+                    <div class="current-stat">
+                        <div class="current-stat-value">{{ number_format(Setting::get('conversion_rate', 0.001), 4) }}</div>
+                        <div class="current-stat-label">FCFA par pièce</div>
                     </div>
-
-                    <h6 class="text-muted mb-3">Minimum Requis</h6>
-                    <div class="text-center mb-4 p-3 bg-light rounded">
-                        <div class="h4 text-primary">{{ number_format(Setting::get('minimum_conversion_pieces', 10000)) }}</div>
-                        <small class="text-muted">pièces</small>
+                    <div class="current-stat">
+                        <div class="current-stat-value">{{ number_format(Setting::get('minimum_conversion_pieces', 10000)) }}</div>
+                        <div class="current-stat-label">Pièces minimum</div>
                     </div>
-
-                    <h6 class="text-muted mb-3">Système</h6>
-                    <div class="text-center p-3 bg-light rounded">
+                    <div class="current-stat">
                         @if(Setting::get('conversion_enabled', true))
-                        <span class="badge bg-success" style="font-size: 1.2rem; padding: 0.5rem 1rem;">
-                            <i class="bi bi-check-circle"></i> Activé
-                        </span>
+                            <span class="status-badge active">
+                                <i class="bi bi-check-circle"></i> Système Activé
+                            </span>
                         @else
-                        <span class="badge bg-danger" style="font-size: 1.2rem; padding: 0.5rem 1rem;">
-                            <i class="bi bi-x-circle"></i> Désactivé
-                        </span>
+                            <span class="status-badge inactive">
+                                <i class="bi bi-x-circle"></i> Système Désactivé
+                            </span>
                         @endif
                     </div>
                 </div>
             </div>
 
-            <!-- Important Notes Card -->
-            <div class="card" style="border: 2px solid #ffc107;">
-                <div class="card-header text-dark" style="background-color: #ffc107;">
-                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Notes Importantes</h5>
+            <!-- Notes -->
+            <div class="info-card">
+                <div class="info-header yellow">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <h6>Notes Importantes</h6>
                 </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        <li class="mb-2">
-                            <strong>Impact Immédiat:</strong> Les modifications prendront effet immédiatement pour toutes les nouvelles conversions.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Conversions en Cours:</strong> Les conversions déjà créées conserveront leur taux d'origine.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Cache:</strong> Le système met en cache les paramètres pendant 1 heure pour de meilleures performances.
+                <div class="info-body">
+                    <ul class="notes-list">
+                        <li>
+                            <strong>Impact Immédiat</strong>
+                            Les modifications prennent effet immédiatement pour toutes les nouvelles conversions.
                         </li>
                         <li>
-                            <strong>Recommandation:</strong> Évitez de modifier le taux trop fréquemment pour maintenir la confiance des utilisateurs.
+                            <strong>Conversions en Cours</strong>
+                            Les conversions existantes conservent leur taux d'origine.
+                        </li>
+                        <li>
+                            <strong>Cache Système</strong>
+                            Les paramètres sont mis en cache pendant 1 heure.
+                        </li>
+                        <li>
+                            <strong>Recommandation</strong>
+                            Évitez les modifications fréquentes pour maintenir la confiance.
                         </li>
                     </ul>
                 </div>
@@ -214,7 +503,9 @@
         </div>
     </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
 function updatePreview() {
     const rate = parseFloat(document.getElementById('conversion_rate').value) || 0.001;
@@ -235,15 +526,8 @@ function updateMinPreview() {
     document.getElementById('min-fcfa-preview').textContent = minFcfa.toLocaleString('fr-FR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
 }
 
-// Update status text when toggling
-document.getElementById('conversion_enabled').addEventListener('change', function() {
-    const statusText = document.getElementById('conversion-status-text');
-    statusText.textContent = this.checked ? 'Activé' : 'Désactivé';
-});
-
-// Initialize preview on page load
 document.addEventListener('DOMContentLoaded', function() {
     updatePreview();
 });
 </script>
-@endsection
+@endpush

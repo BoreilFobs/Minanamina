@@ -1,257 +1,265 @@
-@extends('layouts.app')
+@extends('layouts.modern')
 
-@section('title', 'Détails de la Conversion - Minanamina')
+@section('title', 'Détail Conversion')
 
 @section('content')
-<div class="container py-4">
-    <!-- Header -->
-    <div class="mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h3 mb-0">Détails de la Conversion</h1>
-                <p class="text-muted mb-0">Référence: #{{ $conversion->id }}</p>
-            </div>
-            <a href="{{ route('rewards.conversions') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Retour
-            </a>
-        </div>
+<!-- Back Header -->
+<div class="back-header mb-3">
+    <a href="{{ route('rewards.conversions') }}" class="back-btn">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h5 class="mb-0 fw-bold">Détail</h5>
+    <div style="width: 40px;"></div>
+</div>
+
+<!-- Status Card -->
+<div class="status-card-detail mb-4 {{ $conversion->status }}">
+    <div class="status-icon-lg">
+        @if($conversion->status == 'pending')
+            <i class="bi bi-clock"></i>
+        @elseif($conversion->status == 'processing')
+            <i class="bi bi-arrow-repeat"></i>
+        @elseif($conversion->status == 'completed')
+            <i class="bi bi-check-circle"></i>
+        @else
+            <i class="bi bi-x-circle"></i>
+        @endif
     </div>
+    <h5 class="fw-bold mb-1">
+        @if($conversion->status == 'pending')
+            En attente
+        @elseif($conversion->status == 'processing')
+            En traitement
+        @elseif($conversion->status == 'completed')
+            Complétée
+        @else
+            Rejetée
+        @endif
+    </h5>
+    <p class="mb-0 small opacity-75">{{ $conversion->created_at->format('d/m/Y à H:i') }}</p>
+</div>
 
-    <div class="row">
-        <!-- Conversion Info Card -->
-        <div class="col-md-8">
-            <div class="card mb-4" style="border: 2px solid #0d6efd;">
-                <div class="card-header text-white" style="background-color: #0d6efd;">
-                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations de la Conversion</h5>
-                </div>
-                <div class="card-body">
-                    <!-- Amount Section -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="p-4 bg-light rounded text-center">
-                                <small class="text-muted d-block mb-2">Pièces Converties</small>
-                                <h2 class="mb-0 text-primary">
-                                    <i class="bi bi-coin"></i> {{ number_format($conversion->pieces_amount) }}
-                                </h2>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="p-4 bg-light rounded text-center">
-                                <small class="text-muted d-block mb-2">Montant à Recevoir</small>
-                                <h2 class="mb-0 text-success">
-                                    <i class="bi bi-cash"></i> {{ number_format($conversion->cash_amount, 0) }} CFA
-                                </h2>
-                            </div>
-                        </div>
-                    </div>
+<!-- Amount Info -->
+<div class="amount-card mb-4">
+    <div class="amount-row">
+        <span class="label">Pièces converties</span>
+        <span class="value">{{ number_format($conversion->pieces_amount) }}</span>
+    </div>
+    <div class="amount-divider">
+        <i class="bi bi-arrow-down"></i>
+    </div>
+    <div class="amount-row highlight">
+        <span class="label">Montant à recevoir</span>
+        <span class="value">{{ number_format($conversion->cash_amount, 0) }} FCFA</span>
+    </div>
+</div>
 
-                    <!-- Conversion Details -->
-                    <table class="table table-borderless">
-                        <tr>
-                            <th style="width: 40%;">Taux de Conversion:</th>
-                            <td>1 pièce = {{ $conversion->conversion_rate }} CFA</td>
-                        </tr>
-                        <tr>
-                            <th>Méthode de Paiement:</th>
-                            <td>
-                                @php
-                                    $methodLabels = [
-                                        'orange_money' => 'Orange Money',
-                                        'mtn_mobile_money' => 'MTN Mobile Money',
-                                        'wave' => 'Wave',
-                                        'bank_transfer' => 'Virement Bancaire',
-                                        'paypal' => 'PayPal',
-                                    ];
-                                @endphp
-                                <span class="badge bg-secondary">
-                                    {{ $methodLabels[$conversion->payment_method] ?? $conversion->payment_method }}
-                                </span>
-                            </td>
-                        </tr>
-                        @if($conversion->payment_phone)
-                        <tr>
-                            <th>Numéro de Téléphone:</th>
-                            <td><strong>{{ $conversion->payment_phone }}</strong></td>
-                        </tr>
-                        @endif
-                        @if($conversion->payment_email)
-                        <tr>
-                            <th>Email PayPal:</th>
-                            <td><strong>{{ $conversion->payment_email }}</strong></td>
-                        </tr>
-                        @endif
-                        @if($conversion->payment_account)
-                        <tr>
-                            <th>Compte Bancaire:</th>
-                            <td><strong>{{ $conversion->payment_account }}</strong></td>
-                        </tr>
-                        @endif
-                        <tr>
-                            <th>Date de Demande:</th>
-                            <td>{{ $conversion->created_at->format('d/m/Y à H:i') }}</td>
-                        </tr>
-                        @if($conversion->processed_at)
-                        <tr>
-                            <th>Date de Traitement:</th>
-                            <td>{{ $conversion->processed_at->format('d/m/Y à H:i') }}</td>
-                        </tr>
-                        @endif
-                        @if($conversion->completed_at)
-                        <tr>
-                            <th>Date de Complétion:</th>
-                            <td class="text-success">
-                                <i class="bi bi-check-circle"></i> {{ $conversion->completed_at->format('d/m/Y à H:i') }}
-                            </td>
-                        </tr>
-                        @endif
-                        @if($conversion->rejected_at)
-                        <tr>
-                            <th>Date de Rejet:</th>
-                            <td class="text-danger">
-                                <i class="bi bi-x-circle"></i> {{ $conversion->rejected_at->format('d/m/Y à H:i') }}
-                            </td>
-                        </tr>
-                        @endif
-                    </table>
+<!-- Payment Info -->
+<div class="info-card mb-4">
+    <h6 class="fw-bold mb-3">Informations de paiement</h6>
+    <div class="info-row">
+        <span>Méthode</span>
+        @php
+            $methodLabels = [
+                'orange_money' => 'Orange Money',
+                'mtn_mobile_money' => 'MTN Mobile Money',
+                'wave' => 'Wave',
+            ];
+        @endphp
+        <strong>{{ $methodLabels[$conversion->payment_method] ?? $conversion->payment_method }}</strong>
+    </div>
+    @if($conversion->payment_phone)
+    <div class="info-row">
+        <span>Numéro</span>
+        <strong>{{ $conversion->payment_phone }}</strong>
+    </div>
+    @endif
+</div>
 
-                    <!-- Rejection Reason -->
-                    @if($conversion->status === 'rejected' && $conversion->rejection_reason)
-                    <div class="alert alert-danger">
-                        <h6 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Raison du Rejet</h6>
-                        <p class="mb-0">{{ $conversion->rejection_reason }}</p>
-                    </div>
-                    @endif
-
-                    <!-- Admin Notes -->
-                    @if($conversion->admin_notes)
-                    <div class="alert alert-info">
-                        <h6 class="alert-heading"><i class="bi bi-chat-left-text"></i> Notes de l'Administrateur</h6>
-                        <p class="mb-0">{{ $conversion->admin_notes }}</p>
-                    </div>
-                    @endif
-
-                    <!-- Transaction Reference -->
-                    @if($conversion->transaction_reference)
-                    <div class="alert alert-success">
-                        <h6 class="alert-heading"><i class="bi bi-receipt"></i> Référence de Transaction</h6>
-                        <p class="mb-0"><strong>{{ $conversion->transaction_reference }}</strong></p>
-                    </div>
-                    @endif
-                </div>
+<!-- Timeline -->
+<div class="timeline-card">
+    <h6 class="fw-bold mb-3">Historique</h6>
+    <div class="timeline">
+        <div class="timeline-item completed">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <div class="timeline-title">Demande créée</div>
+                <div class="timeline-date">{{ $conversion->created_at->format('d/m/Y H:i') }}</div>
             </div>
         </div>
-
-        <!-- Status Timeline -->
-        <div class="col-md-4">
-            <div class="card" style="border: 2px solid #0d6efd;">
-                <div class="card-header text-white" style="background-color: #0d6efd;">
-                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Statut</h5>
-                </div>
-                <div class="card-body">
-                    <!-- Current Status -->
-                    <div class="text-center mb-4">
-                        @php
-                            $statusConfig = [
-                                'pending' => ['icon' => 'clock', 'color' => 'warning', 'label' => 'En Attente', 'desc' => 'Votre demande est en attente de traitement'],
-                                'processing' => ['icon' => 'arrow-repeat', 'color' => 'info', 'label' => 'En Traitement', 'desc' => 'Votre demande est en cours de traitement'],
-                                'completed' => ['icon' => 'check-circle', 'color' => 'success', 'label' => 'Complété', 'desc' => 'Le paiement a été effectué'],
-                                'rejected' => ['icon' => 'x-circle', 'color' => 'danger', 'label' => 'Rejeté', 'desc' => 'Votre demande a été rejetée'],
-                            ];
-                            $config = $statusConfig[$conversion->status] ?? ['icon' => 'question', 'color' => 'secondary', 'label' => $conversion->status, 'desc' => ''];
-                        @endphp
-                        
-                        <div class="text-{{ $config['color'] }} mb-3">
-                            <i class="bi bi-{{ $config['icon'] }}" style="font-size: 4rem;"></i>
-                        </div>
-                        <h4 class="text-{{ $config['color'] }}">{{ $config['label'] }}</h4>
-                        <p class="text-muted small">{{ $config['desc'] }}</p>
-                    </div>
-
-                    <!-- Timeline -->
-                    <div class="timeline">
-                        <!-- Created -->
-                        <div class="d-flex mb-3">
-                            <div class="me-3">
-                                <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 40px; height: 40px;">
-                                    <i class="bi bi-check text-white"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <strong>Demande Créée</strong>
-                                <br><small class="text-muted">{{ $conversion->created_at->format('d/m/Y H:i') }}</small>
-                            </div>
-                        </div>
-
-                        <!-- Processing -->
-                        <div class="d-flex mb-3">
-                            <div class="me-3">
-                                <div class="bg-{{ $conversion->processed_at ? 'success' : 'secondary' }} rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 40px; height: 40px;">
-                                    <i class="bi bi-{{ $conversion->processed_at ? 'check' : 'clock' }} text-white"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <strong>En Traitement</strong>
-                                <br><small class="text-muted">
-                                    {{ $conversion->processed_at ? $conversion->processed_at->format('d/m/Y H:i') : 'En attente...' }}
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- Completed or Rejected -->
-                        @if($conversion->status === 'completed')
-                        <div class="d-flex mb-3">
-                            <div class="me-3">
-                                <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 40px; height: 40px;">
-                                    <i class="bi bi-check text-white"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <strong>Paiement Effectué</strong>
-                                <br><small class="text-muted">{{ $conversion->completed_at->format('d/m/Y H:i') }}</small>
-                            </div>
-                        </div>
-                        @elseif($conversion->status === 'rejected')
-                        <div class="d-flex mb-3">
-                            <div class="me-3">
-                                <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 40px; height: 40px;">
-                                    <i class="bi bi-x text-white"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <strong>Demande Rejetée</strong>
-                                <br><small class="text-muted">{{ $conversion->rejected_at->format('d/m/Y H:i') }}</small>
-                            </div>
-                        </div>
-                        @else
-                        <div class="d-flex mb-3">
-                            <div class="me-3">
-                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 40px; height: 40px;">
-                                    <i class="bi bi-clock text-white"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <strong>Finalisation</strong>
-                                <br><small class="text-muted">En attente...</small>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-
-                    <!-- Help Text -->
-                    <div class="alert alert-info mt-4">
-                        <small>
-                            <i class="bi bi-info-circle"></i> 
-                            Le délai de traitement habituel est de 1 à 3 jours ouvrables.
-                        </small>
-                    </div>
-                </div>
+        @if($conversion->processed_at)
+        <div class="timeline-item completed">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <div class="timeline-title">Traitement démarré</div>
+                <div class="timeline-date">{{ $conversion->processed_at->format('d/m/Y H:i') }}</div>
             </div>
         </div>
+        @endif
+        @if($conversion->completed_at)
+        <div class="timeline-item completed">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <div class="timeline-title">Paiement effectué</div>
+                <div class="timeline-date">{{ $conversion->completed_at->format('d/m/Y H:i') }}</div>
+            </div>
+        </div>
+        @endif
+        @if($conversion->rejected_at)
+        <div class="timeline-item rejected">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <div class="timeline-title">Demande rejetée</div>
+                <div class="timeline-date">{{ $conversion->rejected_at->format('d/m/Y H:i') }}</div>
+                @if($conversion->rejection_reason)
+                <div class="timeline-reason">{{ $conversion->rejection_reason }}</div>
+                @endif
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+.back-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Status Card */
+.status-card-detail {
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.status-card-detail.pending { background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%); }
+.status-card-detail.processing { background: linear-gradient(135deg, #cff4fc 0%, #9eeaf9 100%); }
+.status-card-detail.completed { background: linear-gradient(135deg, #d1e7dd 0%, #a3cfbb 100%); }
+.status-card-detail.rejected { background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%); }
+
+.status-icon-lg {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.75rem;
+}
+
+.status-card-detail.pending .status-icon-lg { color: #856404; }
+.status-card-detail.processing .status-icon-lg { color: #055160; }
+.status-card-detail.completed .status-icon-lg { color: #0f5132; }
+.status-card-detail.rejected .status-icon-lg { color: #842029; }
+
+/* Amount Card */
+.amount-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.amount-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+}
+
+.amount-row .label { color: var(--muted); }
+.amount-row .value { font-weight: 700; font-size: 1.1rem; }
+.amount-row.highlight .value { color: var(--success); font-size: 1.25rem; }
+
+.amount-divider {
+    text-align: center;
+    color: var(--muted);
+    padding: 0.5rem 0;
+}
+
+/* Info Card */
+.info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child { border-bottom: none; }
+.info-row span { color: var(--muted); }
+
+/* Timeline */
+.timeline-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.timeline {
+    position: relative;
+    padding-left: 24px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-dot {
+    position: absolute;
+    left: -24px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #e9ecef;
+    border: 2px solid white;
+}
+
+.timeline-item.completed .timeline-dot { background: var(--success); }
+.timeline-item.rejected .timeline-dot { background: var(--danger); }
+
+.timeline-title { font-weight: 600; font-size: 0.9rem; }
+.timeline-date { font-size: 0.75rem; color: var(--muted); }
+.timeline-reason { font-size: 0.8rem; color: var(--danger); margin-top: 4px; }
+</style>
+@endpush

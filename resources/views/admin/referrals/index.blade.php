@@ -1,7 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Système de Parrainage')
+@section('page-title', 'Parrainages')
 
 @section('content')
-<div class="container py-4">
+<div class="admin-page">
     <!-- Alerts -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -10,10 +13,9 @@
     </div>
     @endif
 
-    <!-- Header -->
-    <div class="mb-4">
-        <h1 class="h3 mb-0">Gestion du Système de Parrainage</h1>
-        <p class="text-muted mb-0">Configurer le bonus et suivre les statistiques</p>
+    <div class="admin-page__header mb-4">
+        <h1 class="admin-page__title">Gestion du Système de Parrainage</h1>
+        <p class="admin-page__subtitle">Configurer le bonus et suivre les statistiques</p>
     </div>
 
     <!-- Settings Card -->

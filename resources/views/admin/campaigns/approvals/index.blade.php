@@ -1,14 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Approbation des Campagnes')
+@section('page-title', 'Approbations')
 
 @section('content')
-<div class="container py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="admin-page">
+    <div class="admin-page__header d-flex justify-content-between align-items-start mb-4">
         <div>
-            <h1 class="h3 mb-0">Approbation des Campagnes</h1>
-            <p class="text-muted mb-0">Gérer les campagnes en attente d'approbation</p>
+            <h1 class="admin-page__title">Approbation des Campagnes</h1>
+            <p class="admin-page__subtitle">Gérer les campagnes en attente d'approbation</p>
         </div>
-        <a href="{{ route('admin.campaigns.index') }}" class="btn btn-secondary">
+        <a href="{{ route('admin.campaigns.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Toutes les Campagnes
         </a>
     </div>

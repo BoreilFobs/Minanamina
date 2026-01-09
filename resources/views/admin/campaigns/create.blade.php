@@ -1,11 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Nouvelle Campagne')
+@section('page-title', 'Nouvelle Campagne')
 
 @section('content')
-<div class="container py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">Créer une Nouvelle Campagne</h1>
-        <a href="{{ route('admin.campaigns.index') }}" class="btn btn-secondary">
+<div class="admin-page">
+    <div class="admin-page__header d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="admin-page__title">Créer une Nouvelle Campagne</h1>
+            <p class="admin-page__subtitle">Configurer une nouvelle campagne CPA</p>
+        </div>
+        <a href="{{ route('admin.campaigns.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Retour
         </a>
     </div>

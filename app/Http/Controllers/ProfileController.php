@@ -79,5 +79,30 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Paramètres de confidentialité mis à jour avec succès!');
     }
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = Auth::user();
+
+        // Delete user's avatar if exists
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        // Logout user
+        Auth::logout();
+
+        // Delete user account
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Votre compte a été supprimé avec succès.');
+    }
 }
 

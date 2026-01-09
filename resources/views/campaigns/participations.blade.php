@@ -1,141 +1,339 @@
-@extends('layouts.app')
+@extends('layouts.modern')
+
+@section('title', 'Mes Participations')
 
 @section('content')
-<div class="container py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0">Mes Participations</h1>
-            <p class="text-muted mb-0">Suivez l'état de vos participations</p>
-        </div>
-        <a href="{{ route('campaigns.index') }}" class="btn btn-primary">
-            <i class="bi bi-megaphone"></i> Nouvelles Campagnes
-        </a>
-    </div>
+<!-- Header -->
+<div class="page-header mb-4">
+    <h4 class="mb-1 fw-bold">Mes Participations</h4>
+    <p class="text-muted mb-0 small">Suivez l'état de vos participations</p>
+</div>
 
-    <!-- Stats Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card" style="border: 2px solid #0d6efd; background-color: #0d6efd;">
-                <div class="card-body text-white text-center">
-                    <h3 class="mb-0">{{ number_format($stats['total']) }}</h3>
-                    <small>Total</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card" style="border: 2px solid #ffc107; background-color: #ffc107;">
-                <div class="card-body text-dark text-center">
-                    <h3 class="mb-0">{{ number_format($stats['pending']) }}</h3>
-                    <small>En Attente</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card" style="border: 2px solid #198754; background-color: #198754;">
-                <div class="card-body text-white text-center">
-                    <h3 class="mb-0">{{ number_format($stats['completed']) }}</h3>
-                    <small>Complétées</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card" style="border: 2px solid #6f42c1; background-color: #6f42c1;">
-                <div class="card-body text-white text-center">
-                    <h3 class="mb-0"><i class="bi bi-coin"></i> {{ number_format($stats['total_earned']) }}</h3>
-                    <small>Pièces Gagnées</small>
-                </div>
-            </div>
-        </div>
+<!-- Stats Cards -->
+<div class="participation-stats mb-4">
+    <div class="p-stat-card">
+        <div class="p-stat-value">{{ $stats['total'] }}</div>
+        <div class="p-stat-label">Total</div>
     </div>
-
-    <!-- Participations List -->
-    <div class="card" style="border: 2px solid #0d6efd;">
-        <div class="card-header text-white" style="background-color: #0d6efd;">
-            <h5 class="mb-0"><i class="bi bi-list-check"></i> Historique des Participations</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead style="background-color: #f8f9fa;">
-                        <tr>
-                            <th style="font-weight: 600;">Campagne</th>
-                            <th style="font-weight: 600;">Récompense</th>
-                            <th style="font-weight: 600;">Statut</th>
-                            <th style="font-weight: 600;">Date de Participation</th>
-                            <th style="font-weight: 600;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($participations as $participation)
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    @if($participation->campaign->image)
-                                    <img src="{{ asset('storage/' . $participation->campaign->image) }}" 
-                                         alt="{{ $participation->campaign->title }}"
-                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-right: 10px;">
-                                    @endif
-                                    <div>
-                                        <strong>{{ Str::limit($participation->campaign->title, 40) }}</strong><br>
-                                        <small class="text-muted">{{ Str::limit($participation->campaign->description, 60) }}</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge" style="background-color: #ffc107; color: #000; font-size: 14px;">
-                                    <i class="bi bi-coin"></i> {{ number_format($participation->campaign->pieces_reward) }}
-                                </span>
-                            </td>
-                            <td>
-                                @if($participation->status == 'pending')
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="bi bi-clock-history"></i> En Attente
-                                    </span>
-                                @elseif($participation->status == 'completed')
-                                    <span class="badge bg-success">
-                                        <i class="bi bi-check-circle"></i> Complétée
-                                    </span>
-                                    <br><small class="text-muted">
-                                        +{{ number_format($participation->pieces_earned) }} pièces
-                                    </small>
-                                @elseif($participation->status == 'rejected')
-                                    <span class="badge bg-danger">
-                                        <i class="bi bi-x-circle"></i> Rejetée
-                                    </span>
-                                @endif
-                            </td>
-                            <td>
-                                {{ $participation->started_at->format('d/m/Y') }}<br>
-                                <small class="text-muted">{{ $participation->started_at->format('H:i') }}</small>
-                            </td>
-                            <td>
-                                <a href="{{ route('campaigns.show', $participation->campaign) }}" 
-                                   class="btn btn-sm btn-info">
-                                    <i class="bi bi-eye"></i> Voir
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-5">
-                                <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
-                                <p class="text-muted mt-2">Aucune participation pour le moment</p>
-                                <a href="{{ route('campaigns.index') }}" class="btn btn-primary mt-2">
-                                    <i class="bi bi-megaphone"></i> Découvrir les Campagnes
-                                </a>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        @if($participations->hasPages())
-        <div class="card-footer">
-            {{ $participations->links() }}
-        </div>
-        @endif
+    <div class="p-stat-card warning">
+        <div class="p-stat-value">{{ $stats['pending'] }}</div>
+        <div class="p-stat-label">En attente</div>
+    </div>
+    <div class="p-stat-card success">
+        <div class="p-stat-value">{{ $stats['completed'] }}</div>
+        <div class="p-stat-label">Validées</div>
+    </div>
+    <div class="p-stat-card primary">
+        <div class="p-stat-value">{{ number_format($stats['total_earned'], 0) }}</div>
+        <div class="p-stat-label">Pièces</div>
     </div>
 </div>
+
+<!-- Filter Tabs -->
+<div class="filter-tabs mb-4">
+    <a href="{{ route('campaigns.my-participations') }}" 
+       class="filter-tab {{ !request('status') ? 'active' : '' }}">
+        Toutes
+    </a>
+    <a href="{{ route('campaigns.my-participations', ['status' => 'pending']) }}" 
+       class="filter-tab {{ request('status') == 'pending' ? 'active' : '' }}">
+        En attente
+    </a>
+    <a href="{{ route('campaigns.my-participations', ['status' => 'completed']) }}" 
+       class="filter-tab {{ request('status') == 'completed' ? 'active' : '' }}">
+        Validées
+    </a>
+    <a href="{{ route('campaigns.my-participations', ['status' => 'rejected']) }}" 
+       class="filter-tab {{ request('status') == 'rejected' ? 'active' : '' }}">
+        Rejetées
+    </a>
+</div>
+
+<!-- Participations List -->
+<div class="participations-list">
+    @forelse($participations as $participation)
+    <a href="{{ route('campaigns.show', $participation->campaign) }}" class="participation-card">
+        <div class="participation-image">
+            @if($participation->campaign->image)
+                <img src="{{ asset('storage/' . $participation->campaign->image) }}" alt="{{ $participation->campaign->title }}">
+            @else
+                <div class="image-placeholder">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+            @endif
+        </div>
+        <div class="participation-content">
+            <div class="participation-top">
+                <h6 class="participation-title">{{ Str::limit($participation->campaign->title, 30) }}</h6>
+                @if($participation->status == 'pending')
+                    <span class="status-badge pending">En attente</span>
+                @elseif($participation->status == 'completed')
+                    <span class="status-badge completed">Validée</span>
+                @elseif($participation->status == 'rejected')
+                    <span class="status-badge rejected">Rejetée</span>
+                @endif
+            </div>
+            <div class="participation-bottom">
+                <span class="participation-date text-muted">
+                    <i class="bi bi-calendar3"></i> {{ $participation->started_at->format('d/m/Y') }}
+                </span>
+                @if($participation->status == 'completed' && $participation->pieces_earned > 0)
+                    <span class="participation-earned text-success">
+                        +{{ number_format($participation->pieces_earned) }} <i class="bi bi-gem"></i>
+                    </span>
+                @else
+                    <span class="participation-reward text-muted">
+                        {{ number_format($participation->campaign->pieces_reward) }} <i class="bi bi-gem"></i>
+                    </span>
+                @endif
+            </div>
+        </div>
+        <div class="participation-arrow">
+            <i class="bi bi-chevron-right"></i>
+        </div>
+    </a>
+    @empty
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="bi bi-inbox"></i>
+        </div>
+        <h5>Aucune participation</h5>
+        <p class="text-muted">Participez à des campagnes pour gagner des pièces!</p>
+        <a href="{{ route('campaigns.index') }}" class="btn btn-primary">
+            <i class="bi bi-megaphone me-1"></i> Découvrir les Campagnes
+        </a>
+    </div>
+    @endforelse
+</div>
+
+<!-- Pagination -->
+@if($participations->hasPages())
+<div class="pagination-wrapper mt-4">
+    {{ $participations->appends(request()->query())->links() }}
+</div>
+@endif
 @endsection
+
+@push('styles')
+<style>
+/* Stats Cards */
+.participation-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.p-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.p-stat-card.warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+}
+
+.p-stat-card.success {
+    background: linear-gradient(135deg, #d1e7dd 0%, #a3cfbb 100%);
+}
+
+.p-stat-card.primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+}
+
+.p-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.p-stat-label {
+    font-size: 0.7rem;
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
+/* Filter Tabs */
+.filter-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.filter-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-tab {
+    flex-shrink: 0;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    background: white;
+    color: var(--dark);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s;
+}
+
+.filter-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Participation Card */
+.participations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.participation-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 16px;
+    padding: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: transform 0.2s;
+}
+
+.participation-card:active {
+    transform: scale(0.98);
+}
+
+.participation-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.participation-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.participation-content {
+    flex: 1;
+    padding: 0 0.75rem;
+    min-width: 0;
+}
+
+.participation-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.participation-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.status-badge {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.completed {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-badge.rejected {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.participation-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.participation-earned {
+    font-weight: 600;
+}
+
+.participation-arrow {
+    color: var(--muted);
+    padding-left: 0.5rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: var(--muted);
+}
+
+@media (min-width: 768px) {
+    .participation-stats {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+    
+    .p-stat-card {
+        padding: 1.5rem;
+    }
+    
+    .p-stat-value {
+        font-size: 2rem;
+    }
+    
+    .p-stat-label {
+        font-size: 0.85rem;
+    }
+}
+</style>
+@endpush

@@ -50,13 +50,28 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_flagged_suspicious' => 'boolean',
-            'privacy_settings' => 'json',
-            'notification_preferences' => 'json',
+            'privacy_settings' => 'array',
+            'notification_preferences' => 'array',
             'pieces_balance' => 'decimal:2',
             'lifetime_earnings' => 'decimal:2',
             'referral_earnings' => 'decimal:2',
             'last_completion_at' => 'datetime',
         ];
+    }
+
+    // Accessors to ensure JSON fields are never null
+    protected function privacySettings(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
+            get: fn ($value) => is_array($value) ? $value : [],
+        );
+    }
+
+    protected function notificationPreferences(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
+            get: fn ($value) => is_array($value) ? $value : [],
+        );
     }
 
     // Helper methods

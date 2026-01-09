@@ -1,19 +1,22 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Analytiques - ' . $campaign->title)
+@section('page-title', 'Analytiques')
 
 @section('content')
-<div class="container py-4">
+<div class="admin-page">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="admin-page__header d-flex justify-content-between align-items-start mb-4">
         <div>
-            <h1 class="h4 mb-0">Analytiques: {{ $campaign->title }}</h1>
-            <p class="text-muted mb-0">Performance détaillée de la campagne</p>
+            <h1 class="admin-page__title">Analytiques: {{ $campaign->title }}</h1>
+            <p class="admin-page__subtitle">Performance détaillée de la campagne</p>
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('admin.campaigns.analytics.export', ['campaign' => $campaign, 'format' => 'csv']) }}" 
                class="btn btn-success">
-                <i class="bi bi-file-earmark-spreadsheet"></i> Exporter CSV
+                <i class="bi bi-file-earmark-spreadsheet"></i> Exporter
             </a>
-            <a href="{{ route('admin.campaigns.show', $campaign) }}" class="btn btn-secondary">
+            <a href="{{ route('admin.campaigns.show', $campaign) }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Retour
             </a>
         </div>

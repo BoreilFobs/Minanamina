@@ -1,77 +1,74 @@
-@extends('layouts.app')<x-guest-layout>
+@extends('layouts.auth')
 
-    <div class="mb-4 text-sm text-gray-600">
-
-@section('title', 'Mot de passe oublié - Minanamina')        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-
-    </div>
+@section('title', 'Mot de passe oublié')
 
 @section('content')
-
-<div class="container py-5">    <!-- Session Status -->
-
-    <div class="row justify-content-center">    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-        <div class="col-md-5">
-
-            <div class="card shadow">    <form method="POST" action="{{ route('password.email') }}">
-
-                <div class="card-body p-4">        @csrf
-
-                    <h3 class="card-title text-center mb-4">
-
-                        <i class="bi bi-key text-primary"></i> Réinitialiser le Mot de Passe        <!-- Email Address -->
-
-                    </h3>        <div>
-
-            <x-input-label for="email" :value="__('Email')" />
-
-                    <p class="text-muted text-center mb-4">            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-
-                        Entrez votre numéro de téléphone et nous vous enverrons un code SMS pour réinitialiser votre mot de passe.            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-
-                    </p>        </div>
-
-
-
-                    @if(session('status'))        <div class="flex items-center justify-end mt-4">
-
-                        <div class="alert alert-success">            <x-primary-button>
-
-                            <i class="bi bi-check-circle"></i> {{ session('status') }}                {{ __('Email Password Reset Link') }}
-
-                        </div>            </x-primary-button>
-
-                    @endif        </div>
-
-    </form>
-
-                    <form method="POST" action="{{ route('password.phone') }}"></x-guest-layout>
-
-                        @csrf
-
-                        <!-- Phone -->
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Numéro de téléphone</label>
-                            <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
-                                   id="phone" name="phone" value="{{ old('phone') }}" 
-                                   placeholder="+221771234567" required autofocus>
-                            @error('phone')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 mb-3">
-                            <i class="bi bi-send"></i> Envoyer le Code SMS
-                        </button>
-
-                        <p class="text-center text-muted small mb-0">
-                            <a href="{{ route('login') }}" class="text-primary">Retour à la connexion</a>
-                        </p>
-                    </form>
-                </div>
-            </div>
-        </div>
+<div class="text-center mb-4">
+    <div class="forgot-icon mb-3">
+        <i class="bi bi-key"></i>
     </div>
+    <h4 class="fw-bold">Mot de passe oublié ?</h4>
+    <p class="text-muted">
+        Entrez votre numéro de téléphone et nous vous enverrons un code SMS pour réinitialiser votre mot de passe.
+    </p>
 </div>
+
+@if (session('status'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ session('status') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+<form method="POST" action="{{ route('password.phone') }}">
+    @csrf
+
+    <div class="mb-4">
+        <label for="phone" class="form-label">Numéro de téléphone</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+            <input type="tel" 
+                   class="form-control @error('phone') is-invalid @enderror" 
+                   id="phone" 
+                   name="phone" 
+                   value="{{ old('phone') }}"
+                   placeholder="+221 77 123 45 67"
+                   required 
+                   autofocus>
+        </div>
+        @error('phone')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mb-3">
+        <i class="bi bi-send me-2"></i>Envoyer le code SMS
+    </button>
+</form>
+
+<hr class="my-4">
+
+<div class="text-center">
+    <p class="text-muted mb-2">Vous vous souvenez de votre mot de passe ?</p>
+    <a href="{{ route('login') }}" class="btn btn-outline-secondary w-100">
+        <i class="bi bi-arrow-left me-2"></i>Retour à la connexion
+    </a>
+</div>
+
+<style>
+.forgot-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--warning) 0%, #f39c12 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+.forgot-icon i {
+    font-size: 2.5rem;
+    color: white;
+}
+</style>
 @endsection

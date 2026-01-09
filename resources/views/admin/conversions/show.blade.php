@@ -1,22 +1,20 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('title', 'Détails de la Conversion #' . $conversion->id . ' - Admin')
+@section('title', 'Détails de la Conversion #' . $conversion->id)
+@section('page-title', 'Conversion #' . $conversion->id)
 
 @section('content')
-<div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h3 mb-0">
-                    <i class="bi bi-cash-stack"></i> Conversion #{{ $conversion->id }}
-                </h1>
-                <p class="text-muted mb-0">Gérer la demande de conversion</p>
-            </div>
-            <a href="{{ route('admin.conversions.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Retour
-            </a>
+<div class="admin-page">
+    <div class="admin-page__header d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="admin-page__title">
+                <i class="bi bi-cash-stack me-2"></i>Conversion #{{ $conversion->id }}
+            </h1>
+            <p class="admin-page__subtitle">Gérer la demande de conversion</p>
         </div>
+        <a href="{{ route('admin.conversions.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
     </div>
 
     <div class="row">
