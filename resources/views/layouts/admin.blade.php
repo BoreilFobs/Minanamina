@@ -13,6 +13,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
@@ -300,6 +303,462 @@
             border-top: 1px solid var(--gray-100);
             background: var(--gray-50);
         }
+        
+        /* Filter Card Styles */
+        .filter-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .filter-card .form-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .filter-card .form-control,
+        .filter-card .form-select {
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            padding: 0.625rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .filter-card .form-control:focus,
+        .filter-card .form-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .filter-card .input-group-text {
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+            color: #6b7280;
+        }
+        
+        .filter-card .input-group .form-control {
+            border-radius: 0 10px 10px 0;
+        }
+        
+        /* Modern Form Styles */
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Modern Card Styles */
+        .card {
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+        
+        /* Modern Buttons */
+        .btn--primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn--primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+        
+        .btn--success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn--success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            color: white;
+        }
+        
+        .btn--warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn--warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+            color: white;
+        }
+        
+        .btn--danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn--danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            color: white;
+        }
+        
+        .btn--ghost {
+            background: transparent;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn--ghost:hover {
+            background: #f3f4f6;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+        
+        .btn--sm {
+            padding: 0.375rem 0.875rem;
+            font-size: 0.8rem;
+        }
+        
+        /* Modern Table Styles */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .table thead th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Modern Badge Styles */
+        .badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        
+        /* Alert Styles */
+        .alert-modern {
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: none;
+        }
+        
+        .alert-modern.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+        }
+        
+        .alert-modern.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+        }
+        
+        .alert-modern.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+        }
+        
+        .alert-modern.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+        }
+        
+        /* Stats Card */
+        .stats-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .stats-card.gradient-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+        }
+        
+        .stats-card.gradient-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+        }
+        
+        .stats-card.gradient-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+        }
+        
+        .stats-card.gradient-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+        }
+        
+        .stats-card.gradient-info {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+        }
+        
+        .stats-card__icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-card__value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stats-card__label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .form-card__header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .form-card__header.primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        
+        .form-card__header.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .form-card__header.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .form-card__header.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .form-card__header.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        
+        .form-card__body {
+            padding: 1.5rem;
+        }
+        
+        /* Input Group Modern */
+        .input-group-modern {
+            display: flex;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .input-group-modern:focus-within {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .input-group-modern .input-prefix,
+        .input-group-modern .input-suffix {
+            background: #f9fafb;
+            padding: 0.75rem 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-group-modern input {
+            flex: 1;
+            border: none;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            min-width: 0;
+        }
+        
+        .input-group-modern input:focus {
+            outline: none;
+        }
+        
+        /* Data Table Card */
+        .data-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .data-card__header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+        
+        .data-card__title {
+            font-weight: 700;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .data-card__body {
+            padding: 0;
+        }
+        
+        /* Pagination */
+        .pagination {
+            gap: 0.25rem;
+        }
+        
+        .pagination .page-link {
+            border-radius: 8px;
+            border: none;
+            padding: 0.5rem 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+        
+        .pagination .page-link:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
     </style>
     
     @stack('styles')
@@ -312,9 +771,9 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="admin-sidebar__header">
-                <a href="{{ route('admin.campaigns.index') }}" class="admin-sidebar__logo">
-                    <i class="bi bi-coin"></i>
-                    Admin
+                <a href="{{ route('admin.dashboard') }}" class="admin-sidebar__logo">
+                    <i class="bi bi-shield-check"></i>
+                    Super Admin
                 </a>
                 <button class="admin-sidebar__close" onclick="closeSidebar()">
                     <i class="bi bi-x-lg"></i>
@@ -323,28 +782,19 @@
             
             <nav class="admin-sidebar__nav">
                 <div class="admin-sidebar__section">Principal</div>
-                <a href="{{ route('dashboard') }}" class="admin-sidebar__link">
-                    <i class="bi bi-house"></i>
-                    Retour au site
+                <a href="{{ route('admin.dashboard') }}" class="admin-sidebar__link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="bi bi-grid-1x2"></i>
+                    Tableau de Bord
                 </a>
                 
-                @if(Auth::user()->isCampaignCreator() || Auth::user()->isSuperAdmin())
-                <div class="admin-sidebar__section">Campagnes</div>
-                <a href="{{ route('admin.campaigns.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.campaigns.index') ? 'active' : '' }}">
-                    <i class="bi bi-megaphone"></i>
-                    Mes Campagnes
-                </a>
-                <a href="{{ route('admin.campaigns.create') }}" class="admin-sidebar__link {{ request()->routeIs('admin.campaigns.create') ? 'active' : '' }}">
-                    <i class="bi bi-plus-circle"></i>
-                    Nouvelle Campagne
-                </a>
-                @endif
-                
-                @if(Auth::user()->isSuperAdmin())
-                <div class="admin-sidebar__section">Administration</div>
+                <div class="admin-sidebar__section">Gestion</div>
                 <a href="{{ route('admin.users.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="bi bi-people"></i>
                     Utilisateurs
+                </a>
+                <a href="{{ route('admin.campaigns.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.campaigns.index') || request()->routeIs('admin.campaigns.show') || request()->routeIs('admin.campaigns.edit') ? 'active' : '' }}">
+                    <i class="bi bi-megaphone"></i>
+                    Campagnes
                 </a>
                 <a href="{{ route('admin.campaigns.approvals.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.campaigns.approvals.*') ? 'active' : '' }}">
                     <i class="bi bi-check-circle"></i>
@@ -366,6 +816,8 @@
                     <span class="admin-sidebar__badge">{{ $pendingValidations }}</span>
                     @endif
                 </a>
+                
+                <div class="admin-sidebar__section">Finances</div>
                 <a href="{{ route('admin.conversions.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.conversions.*') ? 'active' : '' }}">
                     <i class="bi bi-cash-coin"></i>
                     Conversions
@@ -375,6 +827,10 @@
                     @if($pendingConversions > 0)
                     <span class="admin-sidebar__badge">{{ $pendingConversions }}</span>
                     @endif
+                </a>
+                <a href="{{ route('admin.pieces.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.pieces.*') ? 'active' : '' }}">
+                    <i class="bi bi-coin"></i>
+                    Pièces
                 </a>
                 <a href="{{ route('admin.referrals.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}">
                     <i class="bi bi-gift"></i>
@@ -386,7 +842,6 @@
                     <i class="bi bi-gear"></i>
                     Paramètres
                 </a>
-                @endif
             </nav>
             
             <!-- User Info at bottom -->
@@ -399,7 +854,7 @@
                     @endif
                     <div class="flex-1 min-w-0">
                         <div class="text-sm font-semibold text-white truncate">{{ Auth::user()->name }}</div>
-                        <div class="text-xs text-gray-400">{{ Auth::user()->isSuperAdmin() ? 'Super Admin' : 'Créateur' }}</div>
+                        <div class="text-xs text-gray-400">Super Administrateur</div>
                     </div>
                 </div>
             </div>
@@ -459,6 +914,9 @@
             </main>
         </div>
     </div>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
         function toggleSidebar() {

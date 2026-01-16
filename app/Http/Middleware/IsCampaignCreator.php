@@ -10,10 +10,15 @@ class IsCampaignCreator
 {
     /**
      * Handle an incoming request.
+     * Allows both campaign creators and superadmins to access creator routes.
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->canManageCampaigns()) {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+        
+        if (!auth()->user()->canManageCampaigns()) {
             abort(403, 'Accès réservé aux créateurs de campagnes.');
         }
 

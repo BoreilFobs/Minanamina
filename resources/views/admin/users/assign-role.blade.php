@@ -1,311 +1,572 @@
 @extends('layouts.admin')
 
-@section('title', 'Assigner un Rôle')
-@section('page-title', 'Rôles')
+@section('title', 'Assigner un Rôle - ' . $user->name)
 
-@push('styles')
+@section('content')
 <style>
-    .user-card {
-        background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    
-    .user-avatar {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-    
-    .user-avatar-placeholder {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color) 0%, #5a4fcf 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75rem;
-        font-weight: 600;
-    }
-    
-    .user-info h4 {
-        margin: 0 0 0.25rem;
-        font-weight: 600;
-    }
-    
-    .user-info p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 0.9rem;
-    }
-    
     .role-card {
         background: white;
         border-radius: 16px;
-        overflow: hidden;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     }
     
-    .role-header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, #5a4fcf 100%);
+    .user-profile-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 2rem;
+    }
+    
+    .user-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         color: white;
-        padding: 1rem 1.5rem;
+        font-size: 2rem;
+        font-weight: 700;
+        flex-shrink: 0;
     }
     
-    .role-header h5 {
-        margin: 0;
+    .user-info h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .user-info-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .current-role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
         font-weight: 600;
+        margin-top: 0.5rem;
     }
     
-    .role-body {
-        padding: 1.5rem;
+    .current-role-badge.user {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+    
+    .current-role-badge.campaign_creator {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #92400e;
+    }
+    
+    .current-role-badge.superadmin {
+        background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+        color: #9d174d;
+    }
+    
+    .role-selection-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+    }
+    
+    .role-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
     }
     
     .role-option {
+        position: relative;
         border: 2px solid #e5e7eb;
         border-radius: 12px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
+        padding: 1.5rem;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s ease;
+        background: white;
     }
     
     .role-option:hover {
-        border-color: var(--primary-color);
-        background: #faf9ff;
+        border-color: #667eea;
+        background: #f8fafc;
     }
     
     .role-option.selected {
-        border-color: var(--primary-color);
-        background: rgba(107, 79, 187, 0.05);
+        border-color: #667eea;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
     }
     
     .role-option input[type="radio"] {
-        display: none;
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
     }
     
-    .role-option-header {
+    .role-option-content {
         display: flex;
-        justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 0.5rem;
+        gap: 1rem;
+    }
+    
+    .role-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.25rem;
+    }
+    
+    .role-icon.user-role {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+    
+    .role-icon.creator-role {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #92400e;
+    }
+    
+    .role-icon.admin-role {
+        background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+        color: #9d174d;
+    }
+    
+    .role-details {
+        flex: 1;
     }
     
     .role-name {
+        font-size: 1.1rem;
         font-weight: 600;
-        font-size: 1rem;
         color: #1f2937;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
     
-    .role-badge {
-        padding: 0.35rem 0.75rem;
+    .current-indicator {
+        font-size: 0.75rem;
+        background: #10b981;
+        color: white;
+        padding: 0.15rem 0.5rem;
         border-radius: 20px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
+        font-weight: 500;
     }
-    
-    .role-badge.basic { background: #f3f4f6; color: #6b7280; }
-    .role-badge.creator { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-    .role-badge.admin { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
     
     .role-description {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         color: #6b7280;
         margin-bottom: 0.75rem;
     }
     
-    .role-features {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        font-size: 0.85rem;
+    .role-permissions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
     
-    .role-features li {
-        padding: 0.25rem 0;
+    .permission-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.8rem;
+        color: #374151;
+        background: #f3f4f6;
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+    }
+    
+    .permission-tag i {
+        color: #10b981;
+        font-size: 0.7rem;
+    }
+    
+    .role-check {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #e5e7eb;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        color: #4b5563;
+        justify-content: center;
+        transition: all 0.3s ease;
     }
     
-    .role-features li i {
-        color: #10b981;
+    .role-option.selected .role-check {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+    }
+    
+    .role-check i {
+        color: white;
         font-size: 0.75rem;
+        opacity: 0;
+        transition: opacity 0.2s ease;
     }
     
-    .warning-alert {
-        background: #fef3c7;
-        border: 1px solid #fcd34d;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
+    .role-option.selected .role-check i {
+        opacity: 1;
+    }
+    
+    .warning-box {
+        background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+        border-left: 4px solid #f59e0b;
+        padding: 1rem 1.25rem;
+        border-radius: 0 8px 8px 0;
+        margin-top: 1.5rem;
         display: flex;
+        align-items: flex-start;
         gap: 0.75rem;
     }
     
-    .warning-alert i {
+    .warning-box i {
         color: #f59e0b;
         font-size: 1.25rem;
+        margin-top: 0.1rem;
     }
     
-    .warning-alert p {
-        margin: 0;
+    .warning-box p {
         color: #92400e;
+        font-size: 0.9rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .btn-cancel {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        border: 1px solid #e5e7eb;
+        background: white;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-cancel:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+        color: #374151;
+    }
+    
+    .btn-save {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-save:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .breadcrumb-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
         font-size: 0.9rem;
     }
     
-    .btn-submit {
-        background: linear-gradient(135deg, var(--primary-color) 0%, #5a4fcf 100%);
-        color: white;
-        border: none;
-        padding: 0.875rem 2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .btn-back {
-        background: #f3f4f6;
-        color: #4b5563;
-        border: none;
-        padding: 0.875rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
+    .breadcrumb-nav a {
+        color: #6b7280;
         text-decoration: none;
+        transition: color 0.2s ease;
     }
     
-    .btn-back:hover {
-        background: #e5e7eb;
-        color: #374151;
+    .breadcrumb-nav a:hover {
+        color: #667eea;
+    }
+    
+    .breadcrumb-nav span {
+        color: #9ca3af;
+    }
+    
+    .breadcrumb-nav .current {
+        color: #1f2937;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+        .user-profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-actions .btn-cancel,
+        .form-actions .btn-save {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
-@endpush
 
-@section('content')
-<div class="admin-page">
-    <div class="admin-page__header">
-        <a href="{{ route('admin.users.index') }}" class="btn-back mb-3">
-            <i class="bi bi-arrow-left"></i> Retour
-        </a>
-        <h1 class="admin-page__title">Assigner un Rôle</h1>
-        <p class="admin-page__subtitle">Gérer les permissions de {{ $user->name }}</p>
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-nav">
+        <a href="{{ route('admin.dashboard') }}"><i class="bi bi-house"></i> Tableau de bord</a>
+        <span>/</span>
+        <a href="{{ route('admin.users.index') }}">Utilisateurs</a>
+        <span>/</span>
+        <span class="current">Assigner un rôle</span>
     </div>
-
-    <!-- User Info -->
-    <div class="user-card">
-        @if($user->avatar)
-        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="user-avatar">
-        @else
-        <div class="user-avatar-placeholder">
-            {{ strtoupper(substr($user->name, 0, 1)) }}
-        </div>
-        @endif
-        <div class="user-info">
-            <h4>{{ $user->name }}</h4>
-            <p>{{ $user->phone }}</p>
-            <p><small>Inscrit le {{ $user->created_at->format('d/m/Y') }}</small></p>
-        </div>
-    </div>
-
-    @if($user->id === auth()->id())
-    <div class="warning-alert">
-        <i class="bi bi-exclamation-triangle"></i>
-        <p>Attention: Vous modifiez votre propre rôle. Assurez-vous de ne pas perdre vos privilèges de super admin!</p>
-    </div>
-    @endif
-
-    <!-- Role Selection -->
-    <div class="role-card">
-        <div class="role-header">
-            <h5><i class="bi bi-shield-check me-2"></i>Choisir un Rôle</h5>
-        </div>
-        <div class="role-body">
-            <form action="{{ route('admin.users.assign-role', $user) }}" method="POST">
-                @csrf
-
-                <!-- User Role -->
-                <label class="role-option {{ $user->role === 'user' ? 'selected' : '' }}">
-                    <input type="radio" name="role" value="user" {{ $user->role === 'user' ? 'checked' : '' }}>
-                    <div class="role-option-header">
-                        <span class="role-name">Utilisateur</span>
-                        <span class="role-badge basic">Basique</span>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="role-card">
+                <!-- User Profile Header -->
+                <div class="user-profile-header">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
-                    <p class="role-description">Accès standard à l'application</p>
-                    <ul class="role-features">
-                        <li><i class="bi bi-check-circle-fill"></i> Participer aux campagnes</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Gagner des pièces</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Convertir en cash</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Parrainer des amis</li>
-                    </ul>
-                </label>
-
-                <!-- Campaign Creator Role -->
-                <label class="role-option {{ $user->role === 'campaign_creator' ? 'selected' : '' }}">
-                    <input type="radio" name="role" value="campaign_creator" {{ $user->role === 'campaign_creator' ? 'checked' : '' }}>
-                    <div class="role-option-header">
-                        <span class="role-name">Créateur de Campagnes</span>
-                        <span class="role-badge creator">Créateur</span>
+                    <div class="user-info">
+                        <h2>{{ $user->name }}</h2>
+                        <div class="user-info-detail">
+                            <i class="bi bi-phone"></i>
+                            {{ $user->phone }}
+                        </div>
+                        @if($user->email)
+                        <div class="user-info-detail">
+                            <i class="bi bi-envelope"></i>
+                            {{ $user->email }}
+                        </div>
+                        @endif
+                        <div class="user-info-detail">
+                            <i class="bi bi-calendar"></i>
+                            Membre depuis {{ $user->created_at->format('d M Y') }}
+                        </div>
+                        <span class="current-role-badge {{ $user->role }}">
+                            @if($user->role === 'superadmin')
+                                <i class="bi bi-shield-check"></i> Super Administrateur
+                            @elseif($user->role === 'campaign_creator')
+                                <i class="bi bi-person-badge"></i> Créateur de Campagnes
+                            @else
+                                <i class="bi bi-person"></i> Utilisateur
+                            @endif
+                        </span>
                     </div>
-                    <p class="role-description">Peut créer et gérer des campagnes</p>
-                    <ul class="role-features">
-                        <li><i class="bi bi-check-circle-fill"></i> Créer/modifier/supprimer des campagnes</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Voir les statistiques détaillées</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Dupliquer des campagnes</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Soumettre pour approbation</li>
-                    </ul>
-                </label>
-
-                <!-- SuperAdmin Role -->
-                <label class="role-option {{ $user->role === 'superadmin' ? 'selected' : '' }}">
-                    <input type="radio" name="role" value="superadmin" {{ $user->role === 'superadmin' ? 'checked' : '' }}>
-                    <div class="role-option-header">
-                        <span class="role-name">Super Administrateur</span>
-                        <span class="role-badge admin">Admin</span>
-                    </div>
-                    <p class="role-description">Accès complet à toutes les fonctionnalités</p>
-                    <ul class="role-features">
-                        <li><i class="bi bi-check-circle-fill"></i> Toutes les fonctionnalités créateur</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Approuver/rejeter les campagnes</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Gérer les utilisateurs et rôles</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Gérer les conversions et paiements</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Configurer les paramètres système</li>
-                    </ul>
-                </label>
-
-                <div class="d-flex gap-3 mt-4">
-                    <a href="{{ route('admin.users.index') }}" class="btn-back">
-                        <i class="bi bi-x"></i> Annuler
-                    </a>
-                    <button type="submit" class="btn-submit">
-                        <i class="bi bi-check-lg"></i> Assigner le Rôle
-                    </button>
                 </div>
-            </form>
+                
+                <!-- Role Selection Form -->
+                <form action="{{ route('admin.users.assign-role', $user) }}" method="POST" id="roleForm">
+                    @csrf
+                    
+                    <h3 class="role-selection-title">
+                        <i class="bi bi-shield me-2"></i>
+                        Sélectionnez le nouveau rôle
+                    </h3>
+                    
+                    <div class="role-options">
+                        <!-- User Role -->
+                        <label class="role-option {{ $user->role === 'user' ? 'selected' : '' }}" data-role="user">
+                            <input type="radio" name="role" value="user" {{ $user->role === 'user' ? 'checked' : '' }}>
+                            <div class="role-option-content">
+                                <div class="role-icon user-role">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div class="role-details">
+                                    <div class="role-name">
+                                        Utilisateur
+                                        @if($user->role === 'user')
+                                            <span class="current-indicator">Rôle actuel</span>
+                                        @endif
+                                    </div>
+                                    <p class="role-description">
+                                        Accès de base à l'application. Peut participer aux campagnes et gagner des récompenses.
+                                    </p>
+                                    <div class="role-permissions">
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Participer aux campagnes</span>
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Voir son profil</span>
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Parrainer des amis</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="role-check"><i class="bi bi-check"></i></div>
+                        </label>
+                        
+                        <!-- Campaign Creator Role -->
+                        <label class="role-option {{ $user->role === 'campaign_creator' ? 'selected' : '' }}" data-role="campaign_creator">
+                            <input type="radio" name="role" value="campaign_creator" {{ $user->role === 'campaign_creator' ? 'checked' : '' }}>
+                            <div class="role-option-content">
+                                <div class="role-icon creator-role">
+                                    <i class="bi bi-person-badge"></i>
+                                </div>
+                                <div class="role-details">
+                                    <div class="role-name">
+                                        Créateur de Campagnes
+                                        @if($user->role === 'campaign_creator')
+                                            <span class="current-indicator">Rôle actuel</span>
+                                        @endif
+                                    </div>
+                                    <p class="role-description">
+                                        Peut créer et gérer ses propres campagnes. Accès au tableau de bord créateur.
+                                    </p>
+                                    <div class="role-permissions">
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Créer des campagnes</span>
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Gérer ses campagnes</span>
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Voir les statistiques</span>
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Valider les participations</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="role-check"><i class="bi bi-check"></i></div>
+                        </label>
+                        
+                        <!-- Superadmin Role -->
+                        <label class="role-option {{ $user->role === 'superadmin' ? 'selected' : '' }}" data-role="superadmin">
+                            <input type="radio" name="role" value="superadmin" {{ $user->role === 'superadmin' ? 'checked' : '' }}>
+                            <div class="role-option-content">
+                                <div class="role-icon admin-role">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <div class="role-details">
+                                    <div class="role-name">
+                                        Super Administrateur
+                                        @if($user->role === 'superadmin')
+                                            <span class="current-indicator">Rôle actuel</span>
+                                        @endif
+                                    </div>
+                                    <p class="role-description">
+                                        Accès complet au système. Peut gérer tous les utilisateurs, campagnes et paramètres.
+                                    </p>
+                                    <div class="role-permissions">
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Toutes les permissions</span>
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Gérer les utilisateurs</span>
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Paramètres système</span>
+                                        <span class="permission-tag"><i class="bi bi-check"></i> Rapports avancés</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="role-check"><i class="bi bi-check"></i></div>
+                        </label>
+                    </div>
+                    
+                    @if($user->id === auth()->id())
+                        <div class="warning-box">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <p>
+                                <strong>Attention!</strong> Vous modifiez votre propre compte. 
+                                Si vous changez votre rôle, vous pourriez perdre l'accès à certaines fonctionnalités.
+                            </p>
+                        </div>
+                    @endif
+                    
+                    @if(session('error'))
+                        <div class="warning-box" style="background: #fee2e2; border-color: #ef4444;">
+                            <i class="bi bi-x-circle" style="color: #ef4444;"></i>
+                            <p style="color: #991b1b;">{{ session('error') }}</p>
+                        </div>
+                    @endif
+                    
+                    <div class="form-actions">
+                        <a href="{{ route('admin.users.index') }}" class="btn-cancel">
+                            <i class="bi bi-arrow-left"></i>
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn-save" id="submitBtn">
+                            <i class="bi bi-check-lg"></i>
+                            Enregistrer le rôle
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
-@push('scripts')
 <script>
-document.querySelectorAll('.role-option').forEach(option => {
-    option.addEventListener('click', function() {
-        document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
-        this.classList.add('selected');
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleOptions = document.querySelectorAll('.role-option');
+        const form = document.getElementById('roleForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const originalRole = '{{ $user->role }}';
+        
+        // Handle role selection
+        roleOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected from all
+                roleOptions.forEach(opt => opt.classList.remove('selected'));
+                // Add selected to clicked
+                this.classList.add('selected');
+                // Check the radio
+                this.querySelector('input[type="radio"]').checked = true;
+                
+                // Update button state
+                const selectedRole = this.dataset.role;
+                if (selectedRole === originalRole) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="bi bi-check-lg"></i> Aucun changement';
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-check-lg"></i> Enregistrer le rôle';
+                }
+            });
+        });
+        
+        // Initial state - disable if no change
+        const checkedRadio = document.querySelector('input[name="role"]:checked');
+        if (checkedRadio && checkedRadio.value === originalRole) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-check-lg"></i> Aucun changement';
+        }
+        
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enregistrement...';
+        });
     });
-});
 </script>
-@endpush
 @endsection

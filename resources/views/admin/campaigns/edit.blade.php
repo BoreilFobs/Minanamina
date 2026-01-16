@@ -3,6 +3,153 @@
 @section('title', 'Modifier Campagne')
 @section('page-title', 'Modifier Campagne')
 
+@push('styles')
+<style>
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-card__header {
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .form-card__header.primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    }
+    
+    .form-card__header.success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .form-card__header.purple {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+    
+    .form-card__body {
+        padding: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+    
+    .input-group-text {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        border: none;
+        color: #78350f;
+        font-weight: 600;
+    }
+    
+    .btn--primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+    
+    .btn--primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        color: white;
+    }
+    
+    .btn--secondary {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+    
+    .btn--secondary:hover {
+        background: #e5e7eb;
+        color: #374151;
+    }
+    
+    .btn--ghost {
+        background: transparent;
+        color: #6b7280;
+        border: 2px solid #e5e7eb;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+    
+    .btn--ghost:hover {
+        background: #f9fafb;
+        color: #374151;
+    }
+    
+    .alert-modern {
+        border-radius: 12px;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+    
+    .alert-modern.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #991b1b;
+    }
+    
+    .current-image {
+        margin-bottom: 1rem;
+    }
+    
+    .current-image img {
+        max-height: 200px;
+        border-radius: 12px;
+        border: 3px solid #6366f1;
+    }
+    
+    .image-preview {
+        margin-top: 1rem;
+    }
+    
+    .image-preview img {
+        max-height: 200px;
+        border-radius: 12px;
+        border: 3px solid #10b981;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="admin-page">
     <div class="admin-page__header d-flex justify-content-between align-items-start mb-4">
@@ -10,21 +157,20 @@
             <h1 class="admin-page__title">Modifier la Campagne</h1>
             <p class="admin-page__subtitle">Mettre à jour les informations de la campagne</p>
         </div>
-        <a href="{{ route('admin.campaigns.show', $campaign) }}" class="btn btn-outline-secondary">
+        <a href="{{ route('admin.campaigns.show', $campaign) }}" class="btn--ghost">
             <i class="bi bi-arrow-left"></i> Retour
         </a>
     </div>
 
     <!-- Errors -->
     @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <h5><i class="bi bi-exclamation-circle"></i> Erreurs de validation</h5>
-        <ul class="mb-0">
+    <div class="alert-modern error mb-4">
+        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-circle"></i> Erreurs de validation</h6>
+        <ul class="mb-0 ps-3">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
         </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 
@@ -33,14 +179,15 @@
         @method('PUT')
 
         <!-- Basic Information -->
-        <div class="card mb-4" style="border: 2px solid #0d6efd;">
-            <div class="card-header text-white" style="background-color: #0d6efd;">
-                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations de Base</h5>
+        <div class="form-card">
+            <div class="form-card__header primary">
+                <i class="bi bi-info-circle"></i>
+                <span>Informations de Base</span>
             </div>
-            <div class="card-body">
+            <div class="form-card__body">
                 <div class="row g-3">
                     <div class="col-md-12">
-                        <label for="title" class="form-label" style="font-weight: 600;">
+                        <label for="title" class="form-label">
                             Titre de la Campagne <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control" id="title" name="title" 
@@ -48,7 +195,7 @@
                     </div>
 
                     <div class="col-md-12">
-                        <label for="description" class="form-label" style="font-weight: 600;">
+                        <label for="description" class="form-label">
                             Description Détaillée <span class="text-danger">*</span>
                         </label>
                         <textarea class="form-control" id="description" name="description" 
@@ -56,36 +203,36 @@
                     </div>
 
                     <div class="col-md-12">
-                        <label for="image" class="form-label" style="font-weight: 600;">
+                        <label for="image" class="form-label">
                             Image de la Campagne
                         </label>
                         
                         @if($campaign->image)
-                        <div class="mb-3">
-                            <img src="{{ asset('storage/' . $campaign->image) }}" 
-                                 class="img-thumbnail" 
-                                 style="max-height: 200px; border: 2px solid #0d6efd;">
+                        <div class="current-image">
+                            <small class="text-muted d-block mb-2">Image actuelle:</small>
+                            <img src="{{ asset('storage/' . $campaign->image) }}" alt="Current image">
                         </div>
                         @endif
                         
                         <input type="file" class="form-control" id="image" name="image" 
                                accept="image/jpeg,image/png,image/jpg,image/gif">
                         <small class="text-muted">Formats acceptés: JPG, PNG, GIF (Max: 2MB). Laissez vide pour conserver l'image actuelle.</small>
-                        <div id="imagePreview" class="mt-3"></div>
+                        <div id="imagePreview" class="image-preview"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Campaign Details -->
-        <div class="card mb-4" style="border: 2px solid #198754;">
-            <div class="card-header text-white" style="background-color: #198754;">
-                <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Détails de la Campagne</h5>
+        <div class="form-card">
+            <div class="form-card__header success">
+                <i class="bi bi-link-45deg"></i>
+                <span>Détails de la Campagne</span>
             </div>
-            <div class="card-body">
+            <div class="form-card__body">
                 <div class="row g-3">
                     <div class="col-md-12">
-                        <label for="cpa_link" class="form-label" style="font-weight: 600;">
+                        <label for="cpa_link" class="form-label">
                             Lien CPA/Affilié <span class="text-danger">*</span>
                         </label>
                         <input type="url" class="form-control" id="cpa_link" name="cpa_link" 
@@ -93,11 +240,11 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label for="pieces_reward" class="form-label" style="font-weight: 600;">
+                        <label for="pieces_reward" class="form-label">
                             Récompense (Pièces) <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <span class="input-group-text" style="background-color: #ffc107;">
+                            <span class="input-group-text">
                                 <i class="bi bi-coin"></i>
                             </span>
                             <input type="number" class="form-control" id="pieces_reward" 
@@ -107,7 +254,7 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label for="start_date" class="form-label" style="font-weight: 600;">
+                        <label for="start_date" class="form-label">
                             Date de Début <span class="text-danger">*</span>
                         </label>
                         <input type="date" class="form-control" id="start_date" name="start_date" 
@@ -115,7 +262,7 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label for="end_date" class="form-label" style="font-weight: 600;">
+                        <label for="end_date" class="form-label">
                             Date de Fin <span class="text-danger">*</span>
                         </label>
                         <input type="date" class="form-control" id="end_date" name="end_date" 
@@ -126,14 +273,15 @@
         </div>
 
         <!-- Advanced Settings -->
-        <div class="card mb-4" style="border: 2px solid #6f42c1;">
-            <div class="card-header text-white" style="background-color: #6f42c1;">
-                <h5 class="mb-0"><i class="bi bi-gear"></i> Paramètres Avancés</h5>
+        <div class="form-card">
+            <div class="form-card__header purple">
+                <i class="bi bi-gear"></i>
+                <span>Paramètres Avancés</span>
             </div>
-            <div class="card-body">
+            <div class="form-card__body">
                 <div class="row g-3">
                     <div class="col-md-12">
-                        <label for="validation_rules" class="form-label" style="font-weight: 600;">
+                        <label for="validation_rules" class="form-label">
                             Conditions de Validation
                         </label>
                         <textarea class="form-control" id="validation_rules" name="validation_rules" 
@@ -141,7 +289,7 @@
                     </div>
 
                     <div class="col-md-12">
-                        <label for="geographic_restrictions" class="form-label" style="font-weight: 600;">
+                        <label for="geographic_restrictions" class="form-label">
                             Restrictions Géographiques
                         </label>
                         @php
@@ -160,11 +308,11 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="d-flex justify-content-end gap-2 mb-4">
-            <a href="{{ route('admin.campaigns.show', $campaign) }}" class="btn btn-secondary">
+        <div class="d-flex justify-content-end gap-3 mb-4">
+            <a href="{{ route('admin.campaigns.show', $campaign) }}" class="btn--secondary">
                 <i class="bi bi-x-circle"></i> Annuler
             </a>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn--primary">
                 <i class="bi bi-save"></i> Mettre à Jour
             </button>
         </div>
@@ -181,12 +329,8 @@ document.getElementById('image').addEventListener('change', function(e) {
         const reader = new FileReader();
         reader.onload = function(e) {
             preview.innerHTML = `
-                <div>
-                    <strong class="text-muted">Nouvelle image:</strong>
-                    <img src="${e.target.result}" 
-                         class="img-thumbnail mt-2" 
-                         style="max-height: 200px; border: 2px solid #0d6efd;">
-                </div>
+                <small class="text-muted d-block mb-2">Nouvelle image:</small>
+                <img src="${e.target.result}" alt="New image preview">
             `;
         };
         reader.readAsDataURL(file);

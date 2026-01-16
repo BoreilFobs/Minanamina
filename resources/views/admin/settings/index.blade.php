@@ -3,6 +3,10 @@
 @section('title', 'Paramètres du Système')
 @section('page-title', 'Paramètres')
 
+@php
+    use App\Models\Setting;
+@endphp
+
 @push('styles')
 <style>
     .settings-grid {

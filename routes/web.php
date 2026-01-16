@@ -18,6 +18,11 @@ use App\Http\Controllers\Admin\ConversionManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\ReferralSettingsController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Creator\DashboardController as CreatorDashboardController;
+use App\Http\Controllers\Creator\CampaignController as CreatorCampaignController;
+use App\Http\Controllers\Creator\AnalyticsController as CreatorAnalyticsController;
+use App\Http\Controllers\Creator\ParticipationController as CreatorParticipationController;
 use Illuminate\Support\Facades\Route;
 
 // Home
@@ -88,6 +93,9 @@ Route::middleware('auth')->group(function () {
 
 // SuperAdmin Only Routes
 Route::middleware(['auth', 'superadmin'])->prefix('admin')->name('admin.')->group(function () {
+    // Admin Dashboard
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
     // User Management
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::get('/users/{user}/assign-role', [UserManagementController::class, 'assignRoleForm'])->name('users.assign-role.form');
@@ -143,11 +151,8 @@ Route::middleware(['auth', 'superadmin'])->prefix('admin')->name('admin.')->grou
     Route::post('/settings/conversion-rate', [SettingsController::class, 'updateConversionRate'])->name('settings.conversion-rate');
     Route::post('/settings/minimum-pieces', [SettingsController::class, 'updateMinimumPieces'])->name('settings.minimum-pieces');
     Route::post('/settings/toggle-conversion', [SettingsController::class, 'toggleConversion'])->name('settings.toggle-conversion');
-});
-
-// Campaign Creator & SuperAdmin Routes
-Route::middleware(['auth', 'campaign_creator'])->prefix('admin')->name('admin.')->group(function () {
-    // Campaign Management
+    
+    // Admin Campaign Management (for superadmins managing all campaigns)
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
     Route::get('/campaigns/create', [CampaignController::class, 'create'])->name('campaigns.create');
     Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
@@ -158,7 +163,34 @@ Route::middleware(['auth', 'campaign_creator'])->prefix('admin')->name('admin.')
     Route::post('/campaigns/{campaign}/submit-approval', [CampaignController::class, 'submitForApproval'])->name('campaigns.submit-approval');
     Route::post('/campaigns/{campaign}/duplicate', [CampaignController::class, 'duplicate'])->name('campaigns.duplicate');
     
-    // Campaign Analytics
+    // Campaign Analytics (SuperAdmin)
     Route::get('/campaigns/{campaign}/analytics', [CampaignAnalyticsController::class, 'index'])->name('campaigns.analytics.show');
     Route::get('/campaigns/{campaign}/analytics/export', [CampaignAnalyticsController::class, 'export'])->name('campaigns.analytics.export');
+});
+
+// ============================================
+// Campaign Creator Routes (Separate Dashboard)
+// ============================================
+Route::middleware(['auth', 'campaign_creator'])->prefix('creator')->name('creator.')->group(function () {
+    // Creator Dashboard
+    Route::get('/', [CreatorDashboardController::class, 'index'])->name('dashboard');
+    
+    // Campaign Management
+    Route::get('/campaigns', [CreatorCampaignController::class, 'index'])->name('campaigns.index');
+    Route::get('/campaigns/create', [CreatorCampaignController::class, 'create'])->name('campaigns.create');
+    Route::post('/campaigns', [CreatorCampaignController::class, 'store'])->name('campaigns.store');
+    Route::get('/campaigns/{campaign}', [CreatorCampaignController::class, 'show'])->name('campaigns.show');
+    Route::get('/campaigns/{campaign}/edit', [CreatorCampaignController::class, 'edit'])->name('campaigns.edit');
+    Route::put('/campaigns/{campaign}', [CreatorCampaignController::class, 'update'])->name('campaigns.update');
+    Route::delete('/campaigns/{campaign}', [CreatorCampaignController::class, 'destroy'])->name('campaigns.destroy');
+    Route::post('/campaigns/{campaign}/submit-approval', [CreatorCampaignController::class, 'submitForApproval'])->name('campaigns.submit-approval');
+    Route::post('/campaigns/{campaign}/duplicate', [CreatorCampaignController::class, 'duplicate'])->name('campaigns.duplicate');
+    
+    // Analytics
+    Route::get('/analytics', [CreatorAnalyticsController::class, 'index'])->name('analytics');
+    
+    // Participations Management
+    Route::get('/participations', [CreatorParticipationController::class, 'index'])->name('participations');
+    Route::post('/participations/{participation}/validate', [CreatorParticipationController::class, 'validate'])->name('participations.validate');
+    Route::post('/participations/{participation}/reject', [CreatorParticipationController::class, 'reject'])->name('participations.reject');
 });

@@ -20,8 +20,8 @@
     
     .stat-card {
         background: white;
-        border-radius: 12px;
-        padding: 1.25rem;
+        border-radius: 16px;
+        padding: 1.5rem;
         text-align: center;
         border-left: 4px solid;
     }
@@ -29,26 +29,26 @@
     .stat-card.pending { border-color: #f59e0b; }
     .stat-card.processing { border-color: #3b82f6; }
     .stat-card.completed { border-color: #10b981; }
-    .stat-card.total { border-color: var(--primary-color); }
+    .stat-card.total { border-color: #6366f1; }
     
     .stat-icon {
-        font-size: 2rem;
+        font-size: 2.5rem;
         margin-bottom: 0.5rem;
     }
     
     .stat-card.pending .stat-icon { color: #f59e0b; }
     .stat-card.processing .stat-icon { color: #3b82f6; }
     .stat-card.completed .stat-icon { color: #10b981; }
-    .stat-card.total .stat-icon { color: var(--primary-color); }
+    .stat-card.total .stat-icon { color: #6366f1; }
     
     .stat-value {
-        font-size: 1.5rem;
+        font-size: 2rem;
         font-weight: 700;
         color: #1f2937;
     }
     
     .stat-label {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         color: #6b7280;
     }
     
@@ -60,19 +60,19 @@
     
     .filter-card {
         background: white;
-        border-radius: 12px;
+        border-radius: 16px;
         padding: 1.25rem;
         margin-bottom: 1.5rem;
     }
     
     .data-table {
         background: white;
-        border-radius: 12px;
+        border-radius: 16px;
         overflow: hidden;
     }
     
     .table-header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, #5a4fcf 100%);
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
         color: white;
         padding: 1rem 1.25rem;
         display: flex;
@@ -117,16 +117,16 @@
     }
     
     .user-avatar {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color) 0%, #5a4fcf 100%);
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
     }
     
     .status-badge {
@@ -181,6 +181,52 @@
         margin-bottom: 1rem;
         opacity: 0.5;
     }
+    
+    .btn--primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn--primary:hover { color: white; }
+    
+    .btn--success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn--success:hover { color: white; }
+    
+    .btn--ghost {
+        background: transparent;
+        color: #6b7280;
+        border: 1px solid #e5e7eb;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+    
+    .btn--ghost:hover {
+        background: #f3f4f6;
+        color: #374151;
+    }
 </style>
 @endpush
 
@@ -191,8 +237,8 @@
             <h1 class="admin-page__title">Gestion des Conversions</h1>
             <p class="admin-page__subtitle">Gérez les demandes de conversion de pièces en cash</p>
         </div>
-        <a href="{{ route('admin.conversions.export') }}" class="btn btn-success">
-            <i class="bi bi-download me-1"></i> Exporter
+        <a href="{{ route('admin.conversions.export') }}" class="btn--success">
+            <i class="bi bi-download"></i> Exporter
         </a>
     </div>
 
@@ -236,12 +282,12 @@
                 </select>
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">
+                <button type="submit" class="btn--primary w-100">
                     <i class="bi bi-funnel"></i> Filtrer
                 </button>
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <a href="{{ route('admin.conversions.index') }}" class="btn btn-outline-secondary w-100">
+                <a href="{{ route('admin.conversions.index') }}" class="btn--ghost w-100">
                     <i class="bi bi-x"></i> Reset
                 </a>
             </div>

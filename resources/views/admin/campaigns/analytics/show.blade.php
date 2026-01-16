@@ -3,6 +3,190 @@
 @section('title', 'Analytiques - ' . $campaign->title)
 @section('page-title', 'Analytiques')
 
+@push('styles')
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (min-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    
+    .stat-card-lg {
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        color: white;
+    }
+    
+    .stat-card-lg.primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    }
+    
+    .stat-card-lg.success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .stat-card-lg.warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    
+    .stat-card-lg.purple {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+    
+    .stat-card-lg h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-card-lg small {
+        opacity: 0.9;
+    }
+    
+    .stats-row-secondary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stat-card-sm {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        text-align: center;
+        border: 2px solid #e5e7eb;
+    }
+    
+    .stat-card-sm.pending { border-color: #f59e0b; }
+    .stat-card-sm.rejected { border-color: #ef4444; }
+    .stat-card-sm.time { border-color: #3b82f6; }
+    
+    .stat-card-sm h4 {
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    
+    .chart-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .chart-card__header {
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .chart-card__header.primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    }
+    
+    .chart-card__header.success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .chart-card__header.purple {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+    
+    .chart-card__header.warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    
+    .chart-card__body {
+        padding: 1.5rem;
+    }
+    
+    .list-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .list-card__header {
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    
+    .list-item {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #f3f4f6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .list-item:last-child {
+        border-bottom: none;
+    }
+    
+    .reward-badge {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: #78350f;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .btn--success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+    
+    .btn--success:hover { color: white; }
+    
+    .btn--ghost {
+        background: transparent;
+        color: #6b7280;
+        border: 2px solid #e5e7eb;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+    
+    .btn--ghost:hover {
+        background: #f9fafb;
+        color: #374151;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="admin-page">
     <!-- Header -->
@@ -13,76 +197,48 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('admin.campaigns.analytics.export', ['campaign' => $campaign, 'format' => 'csv']) }}" 
-               class="btn btn-success">
+               class="btn--success">
                 <i class="bi bi-file-earmark-spreadsheet"></i> Exporter
             </a>
-            <a href="{{ route('admin.campaigns.show', $campaign) }}" class="btn btn-outline-secondary">
+            <a href="{{ route('admin.campaigns.show', $campaign) }}" class="btn--ghost">
                 <i class="bi bi-arrow-left"></i> Retour
             </a>
         </div>
     </div>
 
     <!-- Key Metrics -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card" style="border: 2px solid #0d6efd; background-color: #0d6efd;">
-                <div class="card-body text-white text-center">
-                    <h2 class="mb-0">{{ number_format($stats['total_participants']) }}</h2>
-                    <small>Participants Total</small>
-                </div>
-            </div>
+    <div class="stats-grid">
+        <div class="stat-card-lg primary">
+            <h2>{{ number_format($stats['total_participants']) }}</h2>
+            <small>Participants Total</small>
         </div>
-        <div class="col-md-3">
-            <div class="card" style="border: 2px solid #198754; background-color: #198754;">
-                <div class="card-body text-white text-center">
-                    <h2 class="mb-0">{{ number_format($stats['completed_participations']) }}</h2>
-                    <small>Complétées</small>
-                </div>
-            </div>
+        <div class="stat-card-lg success">
+            <h2>{{ number_format($stats['completed_participations']) }}</h2>
+            <small>Complétées</small>
         </div>
-        <div class="col-md-3">
-            <div class="card" style="border: 2px solid #ffc107; background-color: #ffc107;">
-                <div class="card-body text-dark text-center">
-                    <h2 class="mb-0">{{ $stats['conversion_rate'] }}%</h2>
-                    <small>Taux de Conversion</small>
-                </div>
-            </div>
+        <div class="stat-card-lg warning">
+            <h2>{{ $stats['conversion_rate'] }}%</h2>
+            <small>Taux de Conversion</small>
         </div>
-        <div class="col-md-3">
-            <div class="card" style="border: 2px solid #6f42c1; background-color: #6f42c1;">
-                <div class="card-body text-white text-center">
-                    <h2 class="mb-0"><i class="bi bi-coin"></i> {{ number_format($stats['total_pieces_distributed']) }}</h2>
-                    <small>Pièces Distribuées</small>
-                </div>
-            </div>
+        <div class="stat-card-lg purple">
+            <h2><i class="bi bi-coin"></i> {{ number_format($stats['total_pieces_distributed']) }}</h2>
+            <small>Pièces Distribuées</small>
         </div>
     </div>
 
     <!-- Additional Metrics -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="card" style="border: 2px solid #ffc107;">
-                <div class="card-body text-center">
-                    <h4 class="mb-0">{{ number_format($stats['pending_participations']) }}</h4>
-                    <small class="text-muted">En Attente</small>
-                </div>
-            </div>
+    <div class="stats-row-secondary">
+        <div class="stat-card-sm pending">
+            <h4>{{ number_format($stats['pending_participations']) }}</h4>
+            <small class="text-muted">En Attente</small>
         </div>
-        <div class="col-md-4">
-            <div class="card" style="border: 2px solid #dc3545;">
-                <div class="card-body text-center">
-                    <h4 class="mb-0">{{ number_format($stats['rejected_participations']) }}</h4>
-                    <small class="text-muted">Rejetées</small>
-                </div>
-            </div>
+        <div class="stat-card-sm rejected">
+            <h4>{{ number_format($stats['rejected_participations']) }}</h4>
+            <small class="text-muted">Rejetées</small>
         </div>
-        <div class="col-md-4">
-            <div class="card" style="border: 2px solid #0dcaf0;">
-                <div class="card-body text-center">
-                    <h4 class="mb-0">{{ $stats['average_completion_time'] }} min</h4>
-                    <small class="text-muted">Temps Moyen de Complétion</small>
-                </div>
-            </div>
+        <div class="stat-card-sm time">
+            <h4>{{ $stats['average_completion_time'] }} min</h4>
+            <small class="text-muted">Temps Moyen de Complétion</small>
         </div>
     </div>
 
@@ -90,32 +246,35 @@
         <!-- Left Column: Charts -->
         <div class="col-lg-8">
             <!-- Daily Participations Chart -->
-            <div class="card mb-4" style="border: 2px solid #0d6efd;">
-                <div class="card-header text-white" style="background-color: #0d6efd;">
-                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Participations des 30 Derniers Jours</h5>
+            <div class="chart-card">
+                <div class="chart-card__header primary">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Participations des 30 Derniers Jours</span>
                 </div>
-                <div class="card-body">
+                <div class="chart-card__body">
                     <canvas id="dailyChart" style="max-height: 300px;"></canvas>
                 </div>
             </div>
 
             <!-- Hourly Distribution -->
-            <div class="card mb-4" style="border: 2px solid #198754;">
-                <div class="card-header text-white" style="background-color: #198754;">
-                    <h5 class="mb-0"><i class="bi bi-clock"></i> Distribution par Heure de la Journée</h5>
+            <div class="chart-card">
+                <div class="chart-card__header success">
+                    <i class="bi bi-clock"></i>
+                    <span>Distribution par Heure de la Journée</span>
                 </div>
-                <div class="card-body">
+                <div class="chart-card__body">
                     <canvas id="hourlyChart" style="max-height: 250px;"></canvas>
                 </div>
             </div>
 
             <!-- Geographic Distribution -->
             @if($geographicData->count() > 0)
-            <div class="card mb-4" style="border: 2px solid #6f42c1;">
-                <div class="card-header text-white" style="background-color: #6f42c1;">
-                    <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Distribution Géographique</h5>
+            <div class="chart-card">
+                <div class="chart-card__header purple">
+                    <i class="bi bi-geo-alt"></i>
+                    <span>Distribution Géographique</span>
                 </div>
-                <div class="card-body">
+                <div class="chart-card__body">
                     <canvas id="geoChart" style="max-height: 300px;"></canvas>
                 </div>
             </div>
@@ -125,41 +284,37 @@
         <!-- Right Column: Lists -->
         <div class="col-lg-4">
             <!-- Top Performers -->
-            <div class="card mb-4" style="border: 2px solid #ffc107;">
-                <div class="card-header text-dark" style="background-color: #ffc107;">
-                    <h6 class="mb-0"><i class="bi bi-trophy"></i> Dernières Validations</h6>
+            <div class="list-card">
+                <div class="list-card__header">
+                    <i class="bi bi-trophy"></i>
+                    <span>Dernières Validations</span>
                 </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        @forelse($topPerformers as $participation)
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ $participation->user->name }}</strong><br>
-                                    <small class="text-muted">
-                                        {{ $participation->completed_at->format('d/m/Y H:i') }}
-                                    </small>
-                                </div>
-                                <span class="badge" style="background-color: #ffc107; color: #000;">
-                                    <i class="bi bi-coin"></i> {{ number_format($participation->pieces_earned) }}
-                                </span>
-                            </div>
-                        </div>
-                        @empty
-                        <div class="list-group-item text-center text-muted">
-                            Aucune validation encore
-                        </div>
-                        @endforelse
+                @forelse($topPerformers as $participation)
+                <div class="list-item">
+                    <div>
+                        <strong>{{ $participation->user->name }}</strong><br>
+                        <small class="text-muted">
+                            {{ $participation->completed_at->format('d/m/Y H:i') }}
+                        </small>
                     </div>
+                    <span class="reward-badge">
+                        <i class="bi bi-coin"></i> {{ number_format($participation->pieces_earned) }}
+                    </span>
                 </div>
+                @empty
+                <div class="list-item justify-content-center text-muted">
+                    Aucune validation encore
+                </div>
+                @endforelse
             </div>
 
             <!-- Status Breakdown -->
-            <div class="card" style="border: 2px solid #0d6efd;">
-                <div class="card-header text-white" style="background-color: #0d6efd;">
-                    <h6 class="mb-0"><i class="bi bi-pie-chart"></i> Répartition des Statuts</h6>
+            <div class="chart-card">
+                <div class="chart-card__header primary">
+                    <i class="bi bi-pie-chart"></i>
+                    <span>Répartition des Statuts</span>
                 </div>
-                <div class="card-body">
+                <div class="chart-card__body">
                     <canvas id="statusChart"></canvas>
                 </div>
             </div>
@@ -180,16 +335,16 @@ const dailyChart = new Chart(dailyCtx, {
             {
                 label: 'Total',
                 data: {!! json_encode($dailyData->pluck('count')) !!},
-                borderColor: '#0d6efd',
-                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
                 tension: 0.4,
                 fill: true
             },
             {
                 label: 'Complétées',
                 data: {!! json_encode($dailyData->pluck('completed')) !!},
-                borderColor: '#198754',
-                backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 tension: 0.4,
                 fill: true
             }
@@ -224,9 +379,10 @@ const hourlyChart = new Chart(hourlyCtx, {
         datasets: [{
             label: 'Participations',
             data: {!! json_encode($hourlyData->pluck('count')) !!},
-            backgroundColor: '#198754',
-            borderColor: '#198754',
-            borderWidth: 2
+            backgroundColor: 'rgba(16, 185, 129, 0.7)',
+            borderColor: '#10b981',
+            borderWidth: 2,
+            borderRadius: 4
         }]
     },
     options: {
@@ -258,8 +414,8 @@ const geoChart = new Chart(geoCtx, {
         datasets: [{
             data: {!! json_encode($geographicData->pluck('count')) !!},
             backgroundColor: [
-                '#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1',
-                '#0dcaf0', '#fd7e14', '#20c997', '#d63384', '#6610f2'
+                '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+                '#3b82f6', '#f97316', '#14b8a6', '#ec4899', '#7c3aed'
             ]
         }]
     },
@@ -287,7 +443,7 @@ const statusChart = new Chart(statusCtx, {
                 {{ $stats['pending_participations'] }},
                 {{ $stats['rejected_participations'] }}
             ],
-            backgroundColor: ['#198754', '#ffc107', '#dc3545']
+            backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
         }]
     },
     options: {

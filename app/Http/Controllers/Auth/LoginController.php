@@ -59,11 +59,11 @@ class LoginController extends Controller
     protected function getRedirectRoute($user): string
     {
         if ($user->isSuperAdmin()) {
-            return route('dashboard'); // SuperAdmin dashboard
+            return route('admin.dashboard'); // Super Admin dashboard
         }
         
         if ($user->isCampaignCreator()) {
-            return route('admin.campaigns.index'); // Campaign management
+            return route('creator.dashboard'); // Separate Creator dashboard
         }
         
         // Regular user

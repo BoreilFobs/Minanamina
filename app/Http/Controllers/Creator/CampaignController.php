@@ -1,41 +1,41 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Creator;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Models\CampaignParticipation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class CampaignController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $query = Campaign::with('creator')->latest();
+        $query = Campaign::where('created_by', Auth::id())->latest();
         
         // Filter by status if provided
-        if (request('status')) {
-            $query->where('status', request('status'));
+        if ($request->status) {
+            $query->where('status', $request->status);
         }
         
         // Search functionality
-        if (request('search')) {
-            $query->where(function($q) {
-                $q->where('title', 'like', '%' . request('search') . '%')
-                  ->orWhere('description', 'like', '%' . request('search') . '%');
+        if ($request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
         
-        $campaigns = $query->paginate(15);
+        $campaigns = $query->paginate(10);
         
-        return view('admin.campaigns.index', compact('campaigns'));
+        return view('creator.campaigns.index', compact('campaigns'));
     }
 
     public function create()
     {
-        return view('admin.campaigns.create');
+        return view('creator.campaigns.create');
     }
 
     public function store(Request $request)
@@ -69,18 +69,24 @@ class CampaignController extends Controller
 
         $campaign = Campaign::create($data);
 
-        return redirect()->route('admin.campaigns.show', $campaign)
+        return redirect()->route('creator.campaigns.show', $campaign)
             ->with('success', 'Campagne créée avec succès! Statut: Brouillon');
     }
 
     public function show(Campaign $campaign)
     {
-        $campaign->load('creator', 'participations.user');
+        // Ensure user owns this campaign
+        if ($campaign->created_by !== Auth::id()) {
+            abort(403, 'Vous n\'avez pas accès à cette campagne.');
+        }
+        
+        $campaign->load('participations.user');
         
         // Calculate statistics
         $stats = [
             'total_participants' => $campaign->participations()->count(),
             'completed_participations' => $campaign->participations()->where('status', 'completed')->count(),
+            'pending_participations' => $campaign->participations()->where('status', 'pending')->count(),
             'total_pieces_distributed' => $campaign->participations()->where('status', 'completed')->sum('pieces_earned'),
             'conversion_rate' => 0,
         ];
@@ -89,16 +95,26 @@ class CampaignController extends Controller
             $stats['conversion_rate'] = round(($stats['completed_participations'] / $stats['total_participants']) * 100, 2);
         }
         
-        return view('admin.campaigns.show', compact('campaign', 'stats'));
+        return view('creator.campaigns.show', compact('campaign', 'stats'));
     }
 
     public function edit(Campaign $campaign)
     {
-        return view('admin.campaigns.edit', compact('campaign'));
+        // Ensure user owns this campaign
+        if ($campaign->created_by !== Auth::id()) {
+            abort(403, 'Vous n\'avez pas accès à cette campagne.');
+        }
+        
+        return view('creator.campaigns.edit', compact('campaign'));
     }
 
     public function update(Request $request, Campaign $campaign)
     {
+        // Ensure user owns this campaign
+        if ($campaign->created_by !== Auth::id()) {
+            abort(403, 'Vous n\'avez pas accès à cette campagne.');
+        }
+        
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -130,13 +146,17 @@ class CampaignController extends Controller
 
         $campaign->update($data);
 
-        return redirect()->route('admin.campaigns.show', $campaign)
+        return redirect()->route('creator.campaigns.show', $campaign)
             ->with('success', 'Campagne mise à jour avec succès!');
     }
 
     public function destroy(Campaign $campaign)
     {
-        // Soft delete
+        // Ensure user owns this campaign
+        if ($campaign->created_by !== Auth::id()) {
+            abort(403, 'Vous n\'avez pas accès à cette campagne.');
+        }
+        
         if ($campaign->participations()->count() > 0) {
             return back()->with('error', 'Impossible de supprimer une campagne avec des participations actives.');
         }
@@ -148,78 +168,40 @@ class CampaignController extends Controller
 
         $campaign->delete();
 
-        return redirect()->route('admin.campaigns.index')
+        return redirect()->route('creator.campaigns.index')
             ->with('success', 'Campagne supprimée avec succès!');
     }
 
     public function submitForApproval(Campaign $campaign)
     {
+        // Ensure user owns this campaign
+        if ($campaign->created_by !== Auth::id()) {
+            abort(403, 'Vous n\'avez pas accès à cette campagne.');
+        }
+        
         if ($campaign->status !== 'draft') {
             return back()->with('error', 'Seules les campagnes en brouillon peuvent être soumises pour approbation.');
         }
 
-        $campaign->update(['status' => 'pending_approval']);
+        $campaign->update(['status' => 'pending_review']);
 
-        return back()->with('success', 'Campagne soumise pour approbation!');
+        return back()->with('success', 'Campagne soumise pour approbation! Un administrateur examinera votre campagne bientôt.');
     }
 
     public function duplicate(Campaign $campaign)
     {
+        // Ensure user owns this campaign
+        if ($campaign->created_by !== Auth::id()) {
+            abort(403, 'Vous n\'avez pas accès à cette campagne.');
+        }
+        
         $newCampaign = $campaign->replicate();
         $newCampaign->title = $campaign->title . ' (Copie)';
         $newCampaign->status = 'draft';
         $newCampaign->created_by = Auth::id();
         $newCampaign->save();
 
-        return redirect()->route('admin.campaigns.edit', $newCampaign)
+        return redirect()->route('creator.campaigns.edit', $newCampaign)
             ->with('success', 'Campagne dupliquée avec succès!');
-    }
-
-    /**
-     * Campaign creator dashboard with stats and quick actions
-     */
-    public function creatorDashboard()
-    {
-        $user = Auth::user();
-        
-        // Get user's campaigns
-        $campaigns = Campaign::where('created_by', $user->id)
-            ->latest()
-            ->take(5)
-            ->get();
-        
-        // Calculate statistics
-        $totalCampaigns = Campaign::where('created_by', $user->id)->count();
-        $activeCampaigns = Campaign::where('created_by', $user->id)
-            ->where('status', 'published')
-            ->count();
-        $draftCampaigns = Campaign::where('created_by', $user->id)
-            ->where('status', 'draft')
-            ->count();
-        $pendingApproval = Campaign::where('created_by', $user->id)
-            ->whereIn('status', ['pending_approval', 'pending_review'])
-            ->count();
-        
-        // Total participants and conversions
-        $campaignIds = Campaign::where('created_by', $user->id)->pluck('id');
-        $totalParticipants = \App\Models\CampaignParticipation::whereIn('campaign_id', $campaignIds)->count();
-        $completedParticipations = \App\Models\CampaignParticipation::whereIn('campaign_id', $campaignIds)
-            ->where('status', 'completed')
-            ->count();
-        $totalPiecesDistributed = \App\Models\CampaignParticipation::whereIn('campaign_id', $campaignIds)
-            ->where('status', 'completed')
-            ->sum('pieces_earned');
-        
-        $stats = [
-            'total_campaigns' => $totalCampaigns,
-            'active_campaigns' => $activeCampaigns,
-            'draft_campaigns' => $draftCampaigns,
-            'pending_approval' => $pendingApproval,
-            'total_participants' => $totalParticipants,
-            'completed_participations' => $completedParticipations,
-            'total_pieces_distributed' => $totalPiecesDistributed,
-        ];
-        
-        return view('admin.campaigns.creator-dashboard', compact('campaigns', 'stats'));
     }
 }
