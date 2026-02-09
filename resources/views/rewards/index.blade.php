@@ -70,7 +70,7 @@
     <div class="badge-card">
         <div class="badge-emoji">{{ $badge->icon }}</div>
         <div class="badge-name">{{ $badge->name }}</div>
-        <div class="badge-date">{{ $badge->pivot->awarded_at->diffForHumans() }}</div>
+        <div class="badge-date">{{ \Carbon\Carbon::parse($badge->pivot->awarded_at)->diffForHumans() }}</div>
     </div>
     @endforeach
 </div>
@@ -83,15 +83,17 @@
 </div>
 <div class="badges-grid mb-4">
     @foreach($badgesWithProgress as $badgeData)
-    <div class="badge-item {{ $badgeData['is_earned'] ? 'earned' : 'locked' }}">
+    <div class="badge-item {{ $badgeData['is_earned'] ? 'earned' : 'locked' }}" 
+         title="{{ $badgeData['badge']->description ?? '' }}">
         <div class="badge-emoji">{{ $badgeData['badge']->icon }}</div>
         <div class="badge-name">{{ $badgeData['badge']->name }}</div>
         @if($badgeData['is_earned'])
             <span class="badge-status earned"><i class="bi bi-check"></i></span>
         @else
-            <div class="badge-progress">
+            <div class="badge-progress" title="{{ $badgeData['progress']['label'] ?? '' }}: {{ $badgeData['progress']['current'] ?? 0 }}/{{ $badgeData['progress']['required'] ?? 0 }}">
                 <div class="progress-bar-mini" style="width: {{ $badgeData['progress']['percentage'] ?? 0 }}%"></div>
             </div>
+            <div class="badge-progress-text">{{ $badgeData['progress']['current'] ?? 0 }}/{{ $badgeData['progress']['required'] ?? 0 }}</div>
         @endif
     </div>
     @endforeach
@@ -136,7 +138,7 @@
                 @endphp
                 {{ $typeLabels[$transaction->type] ?? ucfirst($transaction->type) }}
             </div>
-            <div class="transaction-date">{{ $transaction->created_at->format('d/m/Y H:i') }}</div>
+            <div class="transaction-date">{{ $transaction->created_at->format('d M Y \\\u00e0 H:i') }}</div>
         </div>
         <div class="transaction-amount {{ $transaction->amount > 0 ? 'positive' : 'negative' }}">
             {{ $transaction->amount > 0 ? '+' : '' }}{{ number_format($transaction->amount) }}
@@ -168,6 +170,24 @@
     color: white;
 }
 
+.balance-card-main * {
+    color: white;
+}
+
+.balance-card-main .btn-light {
+    color: var(--primary) !important;
+    background: white;
+}
+
+.balance-card-main .btn-light i {
+    color: var(--primary) !important;
+}
+
+.balance-card-main .btn-light:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--primary) !important;
+}
+
 .balance-header {
     display: flex;
     justify-content: space-between;
@@ -176,7 +196,8 @@
 }
 
 .balance-label {
-    opacity: 0.9;
+    color: white;
+    opacity: 1;
     font-size: 0.9rem;
 }
 
@@ -192,10 +213,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: white;
 }
 
 .balance-cash {
-    opacity: 0.9;
+    color: white;
+    opacity: 1;
     font-size: 1rem;
     margin-top: 0.25rem;
 }
@@ -336,6 +359,14 @@
     height: 100%;
     background: var(--primary);
     border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.badge-progress-text {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 2px;
+    font-weight: 500;
 }
 
 /* Transactions List */

@@ -135,13 +135,22 @@ class ReferralService
      */
     public function getUserReferralStats(User $user): array
     {
+        $referredUsers = $user->referredUsers()->select('id', 'name', 'avatar', 'created_at')->get();
+        $totalReferrals = $referredUsers->count();
+        
+        // Calculate actual referral earnings from transactions
+        $actualReferralEarnings = $user->piecesTransactions()
+            ->where('type', 'referral_bonus')
+            ->where('amount', '>', 0)
+            ->sum('amount');
+        
         return [
             'referral_code' => $user->referral_code,
-            'total_referrals' => $user->total_referrals,
-            'referral_earnings' => $user->referral_earnings,
+            'total_referrals' => $totalReferrals,
+            'referral_earnings' => $actualReferralEarnings,
             'pending_referrals' => $user->referralsMade()->where('status', 'pending')->count(),
             'credited_referrals' => $user->referralsMade()->where('status', 'credited')->count(),
-            'referred_users' => $user->referredUsers()->select('id', 'name', 'avatar', 'created_at')->get(),
+            'referred_users' => $referredUsers,
         ];
     }
 

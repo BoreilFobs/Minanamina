@@ -108,6 +108,7 @@
         box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         position: relative;
         z-index: 10;
+        overflow-x: hidden;
     }
     
     .stat-item {
@@ -137,6 +138,21 @@
         font-size: 0.75rem;
         color: #6b7280;
         margin-top: 0.25rem;
+    }
+    
+    @media (max-width: 576px) {
+        .stats-bar {
+            padding: 1rem 0.75rem;
+            margin: -1.5rem 0.5rem 1.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.1rem;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+        }
     }
     
     .section-card {
@@ -221,6 +237,10 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 60%;
+        text-align: right;
     }
     
     .verified-tag {
@@ -231,46 +251,6 @@
         border-radius: 20px;
     }
     
-    .notification-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid #f9fafb;
-    }
-    
-    .notification-toggle:last-child {
-        border-bottom: none;
-    }
-    
-    .toggle-info {
-        flex: 1;
-    }
-    
-    .toggle-label {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: #1f2937;
-        display: block;
-        margin-bottom: 0.15rem;
-    }
-    
-    .toggle-description {
-        font-size: 0.8rem;
-        color: #9ca3af;
-    }
-    
-    .form-switch .form-check-input {
-        width: 48px;
-        height: 26px;
-        cursor: pointer;
-    }
-    
-    .form-switch .form-check-input:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-    
     .referral-code-box {
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
         padding: 1rem 1.25rem;
@@ -279,6 +259,15 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        overflow-x: hidden;
+    }
+    
+    @media (max-width: 576px) {
+        .referral-code-box {
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1rem;
+        }
     }
     
     .referral-code {
@@ -484,7 +473,7 @@
         <span class="stat-label">Pièces</span>
     </div>
     <div class="stat-item">
-        <span class="stat-value">{{ $user->referrals()->count() }}</span>
+        <span class="stat-value">{{ $user->referredUsers()->count() }}</span>
         <span class="stat-label">Filleuls</span>
     </div>
     <div class="stat-item">
@@ -511,9 +500,6 @@
                 <span class="info-label">Téléphone</span>
                 <span class="info-value">
                     {{ $user->phone }}
-                    @if($user->phone_verified_at)
-                        <span class="verified-tag"><i class="bi bi-check-circle"></i> Vérifié</span>
-                    @endif
                 </span>
             </li>
             <li class="info-item">
@@ -549,70 +535,6 @@
                 <i class="bi bi-copy"></i> Copier
             </button>
         </div>
-    </div>
-
-    <!-- Notifications -->
-    <div class="section-card">
-        <div class="section-header">
-            <div class="section-icon green">
-                <i class="bi bi-bell"></i>
-            </div>
-            <h2 class="section-title">Notifications</h2>
-        </div>
-        <form action="{{ route('profile.notifications') }}" method="POST" id="notificationsForm">
-            @csrf
-            @php
-                $preferences = $user->notification_preferences ?? [];
-            @endphp
-            
-            <div class="notification-toggle">
-                <div class="toggle-info">
-                    <span class="toggle-label">Notifications SMS</span>
-                    <span class="toggle-description">Recevoir les alertes par SMS</span>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="sms_notifications" 
-                           onchange="this.form.submit()"
-                           {{ ($preferences['sms_notifications'] ?? true) ? 'checked' : '' }}>
-                </div>
-            </div>
-            
-            <div class="notification-toggle">
-                <div class="toggle-info">
-                    <span class="toggle-label">Nouvelles campagnes</span>
-                    <span class="toggle-description">Être notifié des nouvelles opportunités</span>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="campaign_updates" 
-                           onchange="this.form.submit()"
-                           {{ ($preferences['campaign_updates'] ?? true) ? 'checked' : '' }}>
-                </div>
-            </div>
-            
-            <div class="notification-toggle">
-                <div class="toggle-info">
-                    <span class="toggle-label">Parrainages</span>
-                    <span class="toggle-description">Alertes sur vos filleuls</span>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="referral_updates" 
-                           onchange="this.form.submit()"
-                           {{ ($preferences['referral_updates'] ?? true) ? 'checked' : '' }}>
-                </div>
-            </div>
-            
-            <div class="notification-toggle">
-                <div class="toggle-info">
-                    <span class="toggle-label">Paiements</span>
-                    <span class="toggle-description">Suivi de vos conversions</span>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="payment_updates" 
-                           onchange="this.form.submit()"
-                           {{ ($preferences['payment_updates'] ?? true) ? 'checked' : '' }}>
-                </div>
-            </div>
-        </form>
     </div>
 
     <!-- Security Section -->

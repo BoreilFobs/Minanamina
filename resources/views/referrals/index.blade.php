@@ -99,14 +99,10 @@
         </div>
         <div class="referred-info">
             <div class="referred-name">{{ $referred->name }}</div>
-            <div class="referred-date">Inscrit {{ $referred->created_at->diffForHumans() }}</div>
+            <div class="referred-date">Inscrit le {{ $referred->created_at->format('d M Y') }}</div>
         </div>
         <div class="referred-status">
-            @if($referred->pivot->is_credited ?? false)
-                <span class="badge bg-success-subtle text-success">Crédité</span>
-            @else
-                <span class="badge bg-warning-subtle text-warning">En attente</span>
-            @endif
+            <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle"></i> Actif</span>
         </div>
     </div>
     @empty

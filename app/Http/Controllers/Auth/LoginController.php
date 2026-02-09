@@ -58,15 +58,17 @@ class LoginController extends Controller
      */
     protected function getRedirectRoute($user): string
     {
-        if ($user->isSuperAdmin()) {
-            return route('admin.dashboard'); // Super Admin dashboard
+        // Superadmin users - redirect to admin dashboard
+        if ($user->role === 'superadmin') {
+            return route('admin.dashboard');
         }
         
-        if ($user->isCampaignCreator()) {
-            return route('creator.dashboard'); // Separate Creator dashboard
+        // Campaign creators - redirect to admin campaigns page
+        if ($user->role === 'campaign_creator') {
+            return route('admin.campaigns.index');
         }
         
         // Regular user
-        return route('dashboard'); // User dashboard
+        return route('dashboard');
     }
 }

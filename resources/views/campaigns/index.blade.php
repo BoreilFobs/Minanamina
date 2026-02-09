@@ -58,14 +58,6 @@
                     <i class="bi bi-megaphone"></i>
                 </div>
             @endif
-            @php
-                $daysLeft = \Carbon\Carbon::parse($campaign->end_date)->diffInDays(now());
-            @endphp
-            @if($daysLeft <= 3)
-            <span class="campaign-badge urgent">
-                <i class="bi bi-clock"></i> {{ $daysLeft }}j restants
-            </span>
-            @endif
         </div>
         <div class="campaign-info">
             <h6 class="campaign-name">{{ $campaign->title }}</h6>

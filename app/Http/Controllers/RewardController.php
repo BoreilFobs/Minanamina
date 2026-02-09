@@ -32,14 +32,20 @@ class RewardController extends Controller
             ->latest()
             ->paginate(20);
 
+        // Calculate actual referral earnings from transactions
+        $actualReferralEarnings = $user->piecesTransactions()
+            ->where('type', 'referral_bonus')
+            ->where('amount', '>', 0)
+            ->sum('amount');
+
         $stats = [
             'current_balance' => $user->pieces_balance,
-            'lifetime_earnings' => $user->lifetime_earnings,
-            'total_campaigns_completed' => $user->total_campaigns_completed,
+            'lifetime_earnings' => $user->piecesTransactions()->where('amount', '>', 0)->sum('amount'),
+            'total_campaigns_completed' => $user->participations()->where('status', 'completed')->count(),
             'consecutive_completions' => $user->consecutive_completions,
-            'referral_earnings' => $user->referral_earnings,
+            'referral_earnings' => $actualReferralEarnings,
             'total_earned' => $user->piecesTransactions()->where('amount', '>', 0)->sum('amount'),
-            'total_converted' => $user->piecesTransactions()->where('type', 'converted')->sum('amount'),
+            'total_converted' => abs($user->piecesTransactions()->where('type', 'converted')->sum('amount')),
         ];
 
         $conversionRate = $this->rewardService->getConversionRate();

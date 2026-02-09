@@ -75,7 +75,7 @@
             </div>
             <div class="participation-bottom">
                 <span class="participation-date text-muted">
-                    <i class="bi bi-calendar3"></i> {{ $participation->started_at->format('d/m/Y') }}
+                    <i class="bi bi-calendar3"></i> {{ $participation->started_at->format('d M Y') }}
                 </span>
                 @if($participation->status == 'completed' && $participation->pieces_earned > 0)
                     <span class="participation-earned text-success">

@@ -33,24 +33,23 @@
     <h4 class="fw-bold mb-2">{{ $campaign->title }}</h4>
     
     <div class="status-badges mb-3">
-        <span class="badge bg-success">
-            <i class="bi bi-check-circle"></i> Active
-        </span>
         @php
-            $daysLeft = \Carbon\Carbon::parse($campaign->end_date)->diffInDays(now());
+            $startDate = \Carbon\Carbon::parse($campaign->start_date);
+            $endDate = \Carbon\Carbon::parse($campaign->end_date);
+            $isExpired = $startDate->isPast() && $endDate->isPast();
         @endphp
-        @if($daysLeft <= 3)
-        <span class="badge bg-danger">
-            <i class="bi bi-clock"></i> {{ $daysLeft }}j restants
+        @if($isExpired)
+        <span class="badge bg-secondary">
+            <i class="bi bi-x-circle"></i> Terminé
         </span>
         @else
-        <span class="badge bg-secondary">
-            <i class="bi bi-clock"></i> {{ $daysLeft }}j restants
+        <span class="badge bg-success">
+            <i class="bi bi-check-circle"></i> Active
         </span>
         @endif
     </div>
 
-    <p class="campaign-description">{{ $campaign->description }}</p>
+    <p class="campaign-description" style="word-wrap: break-word; overflow-wrap: break-word;">{{ $campaign->description }}</p>
 </div>
 
 <!-- How to Participate -->
@@ -61,7 +60,7 @@
         <h6 class="mb-0 fw-bold">Comment Participer</h6>
     </div>
     <div class="info-card-body">
-        <p class="mb-0">{{ $campaign->validation_rules }}</p>
+        <p class="mb-0" style="word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap;">{{ $campaign->validation_rules }}</p>
     </div>
 </div>
 @endif
@@ -72,14 +71,14 @@
         <i class="bi bi-calendar-event text-primary"></i>
         <div class="stat-text">
             <small class="text-muted">Début</small>
-            <strong>{{ \Carbon\Carbon::parse($campaign->start_date)->format('d/m/Y') }}</strong>
+            <strong>{{ \Carbon\Carbon::parse($campaign->start_date)->format('d M') }}</strong>
         </div>
     </div>
     <div class="stat-item">
         <i class="bi bi-calendar-x text-danger"></i>
         <div class="stat-text">
             <small class="text-muted">Fin</small>
-            <strong>{{ \Carbon\Carbon::parse($campaign->end_date)->format('d/m/Y') }}</strong>
+            <strong>{{ \Carbon\Carbon::parse($campaign->end_date)->format('d M') }}</strong>
         </div>
     </div>
     <div class="stat-item">
@@ -161,6 +160,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0.5rem 0;
 }
 
 .back-btn {
@@ -181,7 +181,7 @@
     border-radius: 20px;
     overflow: hidden;
     position: relative;
-    margin: 0 -1rem;
+    margin: 0 -0.5rem;
 }
 
 .hero-image {
@@ -223,8 +223,17 @@
 .campaign-detail-card {
     background: white;
     border-radius: 16px;
-    padding: 1.25rem;
+    padding: 1.25rem 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 767px) {
+    .campaign-detail-card {
+        padding: 1.25rem 1rem;
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
+    }
 }
 
 .status-badges {
@@ -259,28 +268,47 @@
     padding: 1.25rem;
 }
 
+@media (max-width: 767px) {
+    .info-card {
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
+    }
+    
+    .info-card-header {
+        padding: 0.875rem 1rem;
+    }
+    
+    .info-card-body {
+        padding: 1rem;
+    }
+}
+
 /* Stats Row */
 .stats-row {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     overflow-x: auto;
     padding-bottom: 8px;
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
 }
 
 .stat-item {
     flex: 1;
-    min-width: 100px;
+    min-width: 90px;
     background: white;
     border-radius: 12px;
-    padding: 1rem;
+    padding: 0.875rem 0.75rem;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .stat-item i {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
 
 .stat-text {
@@ -289,11 +317,32 @@
 }
 
 .stat-text small {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    line-height: 1.2;
 }
 
 .stat-text strong {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 380px) {
+    .stat-item {
+        min-width: 85px;
+        padding: 0.75rem 0.5rem;
+        gap: 6px;
+    }
+    
+    .stat-item i {
+        font-size: 1.1rem;
+    }
+    
+    .stat-text small {
+        font-size: 0.6rem;
+    }
+    
+    .stat-text strong {
+        font-size: 0.75rem;
+    }
 }
 
 /* Participation Status */
@@ -342,16 +391,44 @@
 
 /* Action Button */
 .action-button-wrapper {
-    position: sticky;
-    bottom: 80px;
-    padding: 1rem 0;
-    background: linear-gradient(transparent, var(--light) 30%);
+    position: relative;
+    padding: 1.5rem 0;
+    margin-top: 2rem;
+    margin-bottom: 100px;
+    background: transparent;
 }
 
 .participate-btn {
     padding: 1rem;
     font-size: 1.1rem;
     border-radius: 14px;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 767px) {
+    .campaign-hero {
+        margin-bottom: 0.5rem;
+    }
+    
+    .mb-4 {
+        margin-bottom: 1rem !important;
+    }
+    
+    .participation-status {
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
+    }
+    
+    .status-card {
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+    
+    .status-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.25rem;
+    }
 }
 
 @media (min-width: 768px) {

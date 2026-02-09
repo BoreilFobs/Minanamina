@@ -14,13 +14,28 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Get user statistics
+        // Redirect superadmin users to admin dashboard
+        if ($user->role === 'superadmin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Redirect campaign creators to admin campaigns page
+        if ($user->role === 'campaign_creator') {
+            return redirect()->route('admin.campaigns.index');
+        }
+
+        // Get user statistics - calculate from actual database records
+        $actualReferralEarnings = $user->piecesTransactions()
+            ->where('type', 'referral_bonus')
+            ->where('amount', '>', 0)
+            ->sum('amount');
+        
         $stats = [
             'pieces_balance' => $user->pieces_balance,
             'total_campaigns' => $user->participations()->count(),
             'completed_campaigns' => $user->participations()->where('status', 'completed')->count(),
-            'total_referrals' => $user->total_referrals,
-            'referral_earnings' => $user->referral_earnings,
+            'total_referrals' => $user->referredUsers()->count(),
+            'referral_earnings' => $actualReferralEarnings,
             'active_campaigns' => $user->participations()->where('status', 'active')->count(),
         ];
 

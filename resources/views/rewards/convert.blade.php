@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Back Header -->
-<div class="back-header mb-3">
+<div class="back-header mb-4">
     <a href="{{ route('rewards.index') }}" class="back-btn">
         <i class="bi bi-arrow-left"></i>
     </a>
@@ -58,7 +58,7 @@
                    required>
             <span class="amount-suffix">pièces</span>
         </div>
-        <div class="amount-shortcuts mt-2">
+        <div class="amount-shortcuts mt-3">
             <button type="button" class="shortcut-btn" onclick="setAmount({{ $minimumConversion }})">Min</button>
             <button type="button" class="shortcut-btn" onclick="setAmount({{ floor($user->pieces_balance * 0.25) }})">25%</button>
             <button type="button" class="shortcut-btn" onclick="setAmount({{ floor($user->pieces_balance * 0.5) }})">50%</button>
@@ -77,7 +77,7 @@
 
     <!-- Payment Method -->
     <div class="form-section mb-4">
-        <label class="form-label fw-bold">Mode de paiement</label>
+        <label class="form-label fw-bold mb-3">Mode de paiement</label>
         <div class="payment-methods">
             <label class="payment-option">
                 <input type="radio" name="payment_method" value="orange_money" {{ old('payment_method') == 'orange_money' ? 'checked' : '' }}>
@@ -115,7 +115,7 @@
     <!-- Phone Number -->
     <div class="form-section mb-4" id="phone_field">
         <label class="form-label fw-bold">Numéro de téléphone</label>
-        <div class="input-group">
+        <div class="input-group phone-input-group">
             <span class="input-group-text"><i class="bi bi-phone"></i></span>
             <input type="tel" 
                    class="form-control @error('payment_phone') is-invalid @enderror" 
@@ -130,11 +130,13 @@
     </div>
 
     <!-- Terms -->
-    <div class="form-check mb-4">
-        <input class="form-check-input" type="checkbox" id="terms" required>
-        <label class="form-check-label small" for="terms">
-            J'accepte que cette conversion soit finale et que le délai de traitement soit de 1-3 jours ouvrables
-        </label>
+    <div class="terms-section mb-4">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="terms" required>
+            <label class="form-check-label small" for="terms">
+                J'accepte que cette conversion soit finale et que le délai de traitement soit de 1-3 jours ouvrables
+            </label>
+        </div>
     </div>
 
     <!-- Submit Button -->
@@ -148,60 +150,110 @@
 
 @push('styles')
 <style>
+/* Back Header */
+.back-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+.back-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
 /* Balance Display */
 .balance-display {
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    border-radius: 16px;
-    padding: 1.25rem;
+    border-radius: 20px;
+    padding: 1.5rem;
     color: white;
     text-align: center;
 }
 
 .balance-label {
-    font-size: 0.85rem;
-    opacity: 0.9;
+    font-size: 0.9rem;
+    color: white;
+    opacity: 1;
 }
 
 .balance-value {
-    font-size: 2rem;
+    font-size: 2.25rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    color: white;
+    margin: 0.5rem 0;
 }
 
 .balance-cash {
-    font-size: 0.9rem;
-    opacity: 0.9;
+    font-size: 1rem;
+    color: white;
+    opacity: 0.95;
 }
 
 /* Info Banner */
 .info-banner {
     background: white;
-    border-radius: 14px;
-    padding: 0.75rem;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .info-row {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem 0;
+    align-items: center;
+    padding: 0.75rem 0;
     border-bottom: 1px solid #f0f0f0;
     font-size: 0.9rem;
 }
 
 .info-row:last-child {
     border-bottom: none;
+    padding-bottom: 0;
+}
+
+.info-row:first-child {
+    padding-top: 0;
 }
 
 .info-row span {
     color: var(--muted);
+    display: flex;
+    align-items: center;
 }
 
 .info-row i {
-    margin-right: 6px;
+    margin-right: 8px;
+}
+
+.info-row strong {
+    color: var(--dark);
+}
+
+/* Form Section */
+.form-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.form-section .form-label {
+    margin-bottom: 0.75rem;
+    color: var(--dark);
 }
 
 /* Amount Input */
@@ -210,11 +262,18 @@
 }
 
 .amount-input {
-    padding-right: 70px;
+    padding: 1rem 70px 1rem 1rem;
     font-size: 1.5rem;
     font-weight: 700;
     text-align: center;
     border-radius: 14px;
+    border: 2px solid #e9ecef;
+    height: auto;
+}
+
+.amount-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
 .amount-suffix {
@@ -224,26 +283,29 @@
     transform: translateY(-50%);
     color: var(--muted);
     font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .amount-shortcuts {
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
 .shortcut-btn {
     flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
+    padding: 0.65rem 0.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
     background: white;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    color: var(--dark);
 }
 
-.shortcut-btn:hover {
+.shortcut-btn:hover,
+.shortcut-btn:active {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
@@ -252,19 +314,20 @@
 /* Preview Card */
 .preview-card {
     background: linear-gradient(135deg, #d1e7dd 0%, #a3cfbb 100%);
-    border-radius: 14px;
-    padding: 1.25rem;
+    border-radius: 16px;
+    padding: 1.5rem;
     text-align: center;
 }
 
 .preview-header {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #0f5132;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 
 .preview-amount {
-    font-size: 2rem;
+    font-size: 2.25rem;
     font-weight: 700;
     color: #0f5132;
 }
@@ -273,7 +336,7 @@
 .payment-methods {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 12px;
 }
 
 .payment-option {
@@ -285,10 +348,10 @@
 }
 
 .payment-card {
-    background: white;
+    background: #f8f9fa;
     border: 2px solid #e9ecef;
-    border-radius: 12px;
-    padding: 1rem 0.5rem;
+    border-radius: 14px;
+    padding: 1.25rem 0.5rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
@@ -296,18 +359,18 @@
 
 .payment-option input:checked + .payment-card {
     border-color: var(--primary);
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba(102, 126, 234, 0.08);
 }
 
 .payment-icon {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 0.5rem;
-    font-size: 1.2rem;
+    margin: 0 auto 0.75rem;
+    font-size: 1.25rem;
 }
 
 .payment-icon.orange {
@@ -326,22 +389,98 @@
 }
 
 .payment-card span {
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+/* Phone Input */
+.phone-input-group {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.phone-input-group .input-group-text {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-right: none;
+    padding: 0.75rem 1rem;
+}
+
+.phone-input-group .form-control {
+    border: 2px solid #e9ecef;
+    border-left: none;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+}
+
+.phone-input-group .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: none;
+}
+
+.phone-input-group .form-control:focus + .input-group-text,
+.phone-input-group:focus-within .input-group-text {
+    border-color: var(--primary);
+}
+
+/* Terms Section */
+.terms-section {
+    background: #f8f9fa;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+}
+
+.terms-section .form-check-label {
+    color: var(--muted);
+    line-height: 1.5;
 }
 
 /* Submit Section */
 .submit-section {
-    position: sticky;
-    bottom: 80px;
-    padding: 1rem 0;
-    background: linear-gradient(transparent, var(--light) 30%);
+    padding: 1.5rem 0;
+    margin-bottom: 100px;
+}
+
+.submit-section .btn {
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 14px;
+    font-weight: 600;
+}
+
+/* Mobile adjustments */
+@media (max-width: 380px) {
+    .payment-methods {
+        gap: 8px;
+    }
+    
+    .payment-card {
+        padding: 1rem 0.25rem;
+    }
+    
+    .payment-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .payment-card span {
+        font-size: 0.7rem;
+    }
+    
+    .amount-input {
+        font-size: 1.25rem;
+    }
+    
+    .preview-amount {
+        font-size: 1.75rem;
+    }
 }
 
 @media (min-width: 768px) {
     .submit-section {
-        position: static;
-        background: none;
+        margin-bottom: 2rem;
     }
 }
 </style>

@@ -202,7 +202,7 @@
                     </div>
                     <div class="activity-info">
                         <div class="activity-desc">{{ $activity->description }}</div>
-                        <div class="activity-time text-muted small">{{ $activity->created_at->diffForHumans() }}</div>
+                        <div class="activity-time text-muted small">{{ $activity->created_at->format('d M Y') }}</div>
                     </div>
                     <div class="activity-amount {{ $activity->amount > 0 ? 'positive' : 'negative' }}">
                         {{ $activity->amount > 0 ? '+' : '' }}{{ $activity->amount }}
@@ -263,7 +263,8 @@
 
 .balance-label {
     font-size: 0.9rem;
-    opacity: 0.9;
+    color: white;
+    opacity: 1;
 }
 
 .balance-amount {
@@ -272,6 +273,32 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: white;
+}
+
+.balance-actions {
+    color: white;
+}
+
+.balance-actions .btn-light {
+    color: var(--primary);
+    background: white;
+    border-color: white;
+}
+
+.balance-actions .btn-light:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--primary);
+}
+
+.balance-actions .btn-outline-light {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.balance-actions .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .balance-decoration {
@@ -280,6 +307,7 @@
     bottom: -20px;
     font-size: 8rem;
     opacity: 0.1;
+    color: white;
 }
 
 /* Stats Grid */
